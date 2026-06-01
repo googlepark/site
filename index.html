@@ -1,0 +1,2785 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>자연愛Green - 통합 에디션</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+
+        /* =========================================
+           1. 공통 뼈대 및 하단 네비게이션 (첫 번째 Head 내용)
+           ========================================= */
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            overflow-x: hidden;
+            width: 100%;
+            padding-bottom: 200px !important;
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            padding-bottom: 100px;
+        }
+
+            .page.active {
+                display: block;
+                animation: fadeIn 0.3s ease-in-out;
+            }
+
+        .fixed-footer-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 3px solid #10b981;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0 30px 0;
+            z-index: 9999;
+            width: 100%;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+        }
+
+        @media (max-height: 500px) {
+            .fixed-footer-nav {
+                padding: 5px 0 5px 0;
+            }
+
+            .nav-icon {
+                font-size: 1.2rem !important;
+            }
+
+            .nav-text {
+                font-size: 0.7rem !important;
+            }
+
+            body {
+                padding-bottom: 120px !important;
+            }
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .nav-icon {
+            font-size: 2rem;
+            transition: all 0.2s;
+        }
+
+        .nav-text {
+            font-size: 0.85rem;
+            font-weight: 900;
+        }
+
+        .nav-active {
+            color: #059669;
+        }
+
+        .menu-btn {
+            background: white;
+            padding: 25px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s;
+            width: 100%;
+            font-weight: 800;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .sub-btn {
+            background: white;
+            padding: 22px;
+            border-radius: 18px;
+            border-left: 8px solid #10b981;
+            margin-bottom: 15px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            width: 100%;
+            text-align: left;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        /* 상세 페이지 (분리배출) */
+        .detail-card {
+            background: white;
+            padding: 2.5rem 1.5rem;
+            border-radius: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        #detail-icon {
+            font-size: 6rem;
+            margin-bottom: 1rem;
+        }
+
+        #detail-label {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #059669;
+            margin-bottom: 2rem;
+            border-bottom: 6px solid #d1fae5;
+            padding-bottom: 0.5rem;
+        }
+
+        #detail-text {
+            font-size: 1.25rem;
+            line-height: 1.8;
+            font-weight: 700;
+            color: #374151;
+            width: 100%;
+            text-align: left;
+            white-space: pre-wrap;
+        }
+
+        .back-btn-large {
+            background: #f3f4f6;
+            color: #4b5563;
+            padding: 20px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* =========================================
+           2. 기초 덕목 퀴즈 전용 스타일 (두 번째 Head 내용 병합)
+           ========================================= */
+        #game-wrapper {
+            background: #ffffff;
+            border-radius: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+            padding: 30px;
+            max-width: 700px;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #bcd1a2;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            background: #f8faf5;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border: 1.5px solid #d4e3c3;
+            color: #557c3e;
+        }
+
+        #village-container {
+            position: relative;
+            height: 190px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to bottom, #fdfbfb 0%, #ebedee 100%);
+            border-radius: 30px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-bottom: 10px solid #795548;
+        }
+
+        #village-display {
+            font-size: 80px;
+            z-index: 2;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #growth-stage {
+            font-size: 1.1rem;
+            color: #388e3c;
+            font-weight: 800;
+            margin-top: 8px;
+            background: white;
+            padding: 2px 15px;
+            border-radius: 20px;
+        }
+
+        .virtue-seed {
+            position: absolute;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            animation: plantSeed 1s ease-out forwards;
+            z-index: 5;
+            background: #8d6e63;
+            padding: 6px 14px;
+            border-radius: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        @keyframes plantSeed {
+            0% {
+                transform: translateY(-100px) scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(60px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .water-can {
+            position: absolute;
+            font-size: 3.5rem;
+            animation: watering 1.2s ease-in-out forwards;
+            opacity: 0;
+            z-index: 6;
+        }
+
+        @keyframes watering {
+            0% {
+                transform: translate(60px, -60px) rotate(0deg);
+                opacity: 0;
+            }
+
+            30% {
+                opacity: 1;
+                transform: translate(40px, -40px) rotate(-35deg);
+            }
+
+            100% {
+                transform: translate(40px, -40px) rotate(-35deg);
+                opacity: 0;
+            }
+        }
+
+        #question-box {
+            background: #fff;
+            border: 2px solid #66bb6a;
+            border-radius: 20px;
+            padding: 25px 20px;
+            margin-bottom: 20px;
+            min-height: 80px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1b5e20;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .option-btn {
+            padding: 15px;
+            font-size: 1rem;
+            border-radius: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            background: #f1f8e9;
+            color: #2e7d32;
+            border: 2px solid #c8e6c9;
+            box-shadow: 0 4px 0 #a5d6a7;
+        }
+
+            .option-btn:hover {
+                background: #c8e6c9;
+                transform: translateY(-2px);
+            }
+
+        .retry-btn {
+            background: #fff3e0;
+            color: #e65100;
+            grid-column: span 2;
+            border: 2px solid #ffe0b2;
+            padding: 15px;
+            border-radius: 18px;
+            font-weight: bold;
+        }
+
+        #virtue-counter {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .virtue-item {
+            padding: 4px 10px;
+            border-radius: 50px;
+            background: #eee;
+            color: #999;
+            font-size: 0.75rem;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .v-active {
+            background: #4caf50 !important;
+            color: white !important;
+            border-color: #388e3c !important;
+            font-weight: bold;
+            transform: scale(1.1);
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.98);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+        /* ==========================================
+           🎭 퀴즈 & 도덕극장 공통 디자인 (예쁜 옷)
+           ========================================== */
+        .hidden { display: none !important; }
+        
+        .overlay {
+            text-align: center;
+            background: white;
+            padding: 40px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-weight: 800;
+            color: #475569;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        #village-container {
+            text-align: center;
+            background: linear-gradient(to bottom, #e0f2fe, #f0fdf4);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #bbf7d0;
+        }
+
+        #village-display { font-size: 80px; margin-bottom: 10px; transition: all 0.5s ease; }
+        #growth-stage { font-weight: 900; color: #166534; font-size: 1.2rem; }
+
+        #question-box {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 20px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #1f2937;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 3px solid #e2e8f0;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .options { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
+        
+        .option-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 18px 20px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #475569;
+            text-align: left;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .option-btn:hover { border-color: #22c55e; background: #f0fdf4; color: #166534; transform: translateY(-2px); }
+
+        #virtue-counter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .virtue-item {
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            transition: all 0.3s;
+        }
+        .virtue-item.v-active { background: #dcfce7; color: #166534; transform: scale(1.1); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+
+        .back-btn-large {
+            display: block;
+            width: 100%;
+            background-color: #f1f5f9;
+            color: #475569;
+            text-align: center;
+            padding: 15px 0;
+            border-radius: 15px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            border: 2px solid #e2e8f0;
+        }
+        /* <--- 기존 마지막 스타일의 닫는 중괄호 */
+
+        /* 여기서부터 제가 드린 토스트 알림 CSS 시작 */
+        #stat-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            pointer-events: none;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .pop-up {
+            animation: popUpAnim 1.2s ease-out forwards;
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        @keyframes popUpAnim {
+            0% {
+                transform: translate(-50%, 40%);
+                opacity: 0;
+                scale: 0.5;
+            }
+
+            20% {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+                scale: 1.2;
+            }
+
+            80% {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+                scale: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -150%);
+                opacity: 0;
+            }
+            /* ==========================================
+           🌍 지속가능 퀴즈 전용 스타일 (세대 간의 만남)
+           ========================================== */
+            #sustain-bridge-container {
+                position: relative;
+                height: 160px;
+                background: linear-gradient(to bottom, #f0f9ff, #e0f2fe);
+                border-radius: 20px;
+                margin-bottom: 20px;
+                border: 2px solid #bae6fd;
+                overflow: hidden;
+                display: flex;
+                align-items: flex-end;
+                justify-content: space-between;
+                padding-bottom: 20px;
+            }
+
+            .bridge-path {
+                position: absolute;
+                bottom: 25px;
+                left: 5%;
+                right: 5%;
+                height: 8px;
+                background: #cbd5e1;
+                border-radius: 10px;
+            }
+
+            .bridge-path-fill {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                background: #3b82f6;
+                border-radius: 10px;
+                width: 0%;
+                transition: width 0.8s ease-in-out;
+            }
+
+            .avatar-box {
+                position: absolute;
+                bottom: 25px;
+                text-align: center;
+                transition: all 0.8s ease-in-out;
+                z-index: 10;
+            }
+
+            .avatar-icon {
+                font-size: 3.5rem;
+            }
+
+            .avatar-label {
+                font-size: 0.75rem;
+                font-weight: 900;
+                background: white;
+                padding: 2px 8px;
+                border-radius: 10px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                color: #1e293b;
+            }
+            /* 왼쪽: 현재 세대 */
+            #avatar-current {
+                left: 5%;
+                transform: translateX(-50%);
+            }
+            /* 오른쪽: 미래 세대 */
+            #avatar-future {
+                right: 5%;
+                transform: translateX(50%);
+            }
+            
+    </style>
+</head>
+<body>
+
+    <header class="bg-white border-b-2 p-5 text-center sticky top-0 z-50">
+        <h1 class="text-2xl font-black text-green-700">🌿 자연愛Green</h1>
+    </header>
+
+    <div id="page-home" class="page active">
+        <div class="bg-green-600 text-white p-10 rounded-[40px] mb-8 shadow-xl text-center">
+            <h2 class="text-3xl font-black mb-3">안녕! 초록 단짝이야. ✨</h2>
+            <p class="text-xl opacity-90 font-bold leading-tight">지구를 지키는 아름다운 인성,<br>지금 바로 실천해볼까?</p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6">
+            <button onclick="navigateTo('studyhome')" class="menu-btn flex items-center space-x-6">
+                <span class="text-6xl">📖</span>
+                <div class="text-left"><h3 class="text-2xl font-bold">학년별 학습터</h3><p class="text-base text-gray-400">자연愛의 실천!</p></div>
+            </button>
+            <button onclick="navigateTo('practice')" class="menu-btn flex items-center space-x-6">
+                <span class="text-6xl">🌱</span>
+                <div class="text-left"><h3 class="text-2xl font-bold">나의 실천 & 칭찬</h3><p class="text-base text-gray-400">칭찬 도장을 쾅쾅!</p></div>
+            </button>
+            <button onclick="navigateTo('theater')" class="menu-btn flex items-center space-x-6 bg-purple-50 border-2 border-purple-100">
+                <span class="text-6xl">🎭</span>
+                <div class="text-left">
+                    <h3 class="text-2xl font-bold text-purple-800">도덕 딜레마 극장</h3>
+                    <p class="text-base text-purple-600">당신의 선택을 확인해요</p>
+                </div>
+            </button>
+            <button onclick="navigateTo('quiz-home')" class="menu-btn flex items-center space-x-6">
+                <span class="text-6xl">❓</span>
+                <div class="text-left"><h3 class="text-2xl font-bold">퀴즈로 알아보기</h3><p class="text-base text-gray-400">재미있는 퀴즈 타임!</p></div>
+            </button>
+            <button onclick="navigateTo('chatbot')" class="menu-btn flex items-center space-x-6 bg-blue-50 border-2 border-blue-100">
+                <span class="text-6xl">🤖</span>
+                <div class="text-left"><h3 class="text-2xl font-bold text-blue-800">AI 챗봇 물어보기</h3><p class="text-base text-blue-600">방법과 이유를 알려드려요</p></div>
+            </button>
+        </div>
+    </div>
+
+    <div id="page-chatbot" class="page">
+        <div class="bg-white rounded-[35px] shadow-lg overflow-hidden flex flex-col h-[550px] border-2 border-blue-100">
+            <div class="bg-blue-600 p-5 text-white flex items-center">
+                <span class="text-3xl mr-3">🤖</span>
+                <div><h3 class="font-black text-lg">에코 챗봇 친구</h3><p class="text-xs opacity-80">무엇이든 물어보세요!</p></div>
+            </div>
+            <div id="chat-window" class="flex-1 p-5 overflow-y-auto bg-gray-50 space-y-4">
+                <div class="flex justify-start mb-2">
+                    <div class="bg-white p-3 rounded-xl shadow-sm text-sm border border-gray-100">
+                        안녕! 나는 <b>자연애 Green 챗봇</b>이야. ✨<br><br>
+                        궁금한 <b>쓰레기 이름</b>이나 지켜야 할 <b>덕목</b> 혹은 미래 세대를 위한 <b>지속가능한 삶</b>에 대해 물어봐 줘!<br><br>
+                        ♻️ <b>분리배출 종류:</b><br>
+                        종이, 종이팩, 캔, 플라스틱, 비닐, 음식물, 일반쓰레기, 유해폐기물<br><br>
+                        💚 <b>지구 지킴이 덕목:</b><br>
+                        절제, 생명존중, 책임, 정직, 배려, 공동체 의식, 협력, 공감, 성실, 인내<br><br>
+                        🌳 <b>미래 세대:</b><br>
+                        지속가능, 미래세대, 녹색 넛지<br><br>
+                        AI가 아니라 위에 제시된 내용 외에는 답해 줄 수가 없어<br><br>
+                        무엇을 도와줄까? 😊`
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-white border-t flex gap-2">
+                <input type="text" id="chat-input" class="flex-1 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="질문을 입력하세요..." onkeypress="if(event.keyCode==13) sendMessage()">
+                <button onclick="sendMessage()" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-md">전송</button>
+            </div>
+        </div>
+        <div class="bottom-action-area">
+            <button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button>
+        </div>
+    </div>
+
+    <div id="page-practice" class="page">
+        <div class="bg-white p-6 rounded-[35px] shadow-sm border-2 border-green-100 mb-6 flex flex-col justify-center items-center text-center">
+            <div class="text-5xl mb-3">🏅</div>
+            <h3 class="text-2xl font-black text-green-700 mb-2">멋진 어린이 지킴이!</h3>
+            <p class="text-lg text-gray-600 font-bold leading-relaxed">우리 반 버튼을 눌러 실천 내용을 공유해 봐요!</p>
+        </div>
+
+        <div id="class-selector" class="grid grid-cols-3 gap-4 mb-6">
+            <button onclick="openPadlet('4-1', 'https://padlet.com/ddcsincheon/breakout-room/8G57v1gKJ3Yl2dVX-o4ZnXBWBegrgvNda')" class="p-4 bg-orange-100 hover:bg-orange-200 text-orange-700 font-black rounded-2xl border-2 border-orange-200 shadow-sm transition-all text-xl">4-1</button>
+            <button onclick="openPadlet('4-2', 'https://padlet.com/ddcsincheon/breakout-room/eo1R47bO9bAxvZDL-o4ZnXBWBegrgvNda')" class="p-4 bg-orange-100 hover:bg-orange-200 text-orange-700 font-black rounded-2xl border-2 border-orange-200 shadow-sm transition-all text-xl">4-2</button>
+            <button onclick="openPadlet('4-3', 'https://padlet.com/ddcsincheon/breakout-room/mWng4lArQA592zdJ-o4ZnXBWBegrgvNda')" class="p-4 bg-orange-100 hover:bg-orange-200 text-orange-700 font-black rounded-2xl border-2 border-orange-200 shadow-sm transition-all text-xl">4-3</button>
+
+            <button onclick="openPadlet('5-1', 'https://padlet.com/ddcsincheon/breakout-room/enZlqbMVrQX923QR-o4ZnXBWBegrgvNda')" class="p-4 bg-green-100 hover:bg-green-200 text-green-700 font-black rounded-2xl border-2 border-green-200 shadow-sm transition-all text-xl">5-1</button>
+            <button onclick="openPadlet('5-2', 'https://padlet.com/ddcsincheon/breakout-room/mWng4lArkgJw2zdJ-o4ZnXBWBegrgvNda')" class="p-4 bg-green-100 hover:bg-green-200 text-green-700 font-black rounded-2xl border-2 border-green-200 shadow-sm transition-all text-xl">5-2</button>
+            <button onclick="openPadlet('5-3', 'https://padlet.com/ddcsincheon/breakout-room/LProvDLrzJy0vOMJ-o4ZnXBWBegrgvNda')" class="p-4 bg-green-100 hover:bg-green-200 text-green-700 font-black rounded-2xl border-2 border-green-200 shadow-sm transition-all text-xl">5-3</button>
+            <button onclick="openPadlet('5-4', 'https://padlet.com/ddcsincheon/breakout-room/QgJV4Z6YkMJ84mBk-o4ZnXBWBegrgvNda')" class="p-4 bg-green-100 hover:bg-green-200 text-green-700 font-black rounded-2xl border-2 border-green-200 shadow-sm transition-all text-xl">5-4</button>
+            <button onclick="openPadlet('5-5', 'https://padlet.com/ddcsincheon/breakout-room/ldoNv8JOA0jW2JXV-o4ZnXBWBegrgvNda')" class="p-4 bg-green-100 hover:bg-green-200 text-green-700 font-black rounded-2xl border-2 border-green-200 shadow-sm transition-all text-xl">5-5</button>
+            <button onclick="openPadlet('5-6', 'https://padlet.com/ddcsincheon/breakout-room/eXwgvwGk7yn6vybR-o4ZnXBWBegrgvNda')" class="p-4 bg-green-100 hover:bg-green-200 text-green-700 font-black rounded-2xl border-2 border-green-200 shadow-sm transition-all text-xl">5-6</button>
+
+            <button onclick="openPadlet('6-1', 'https://padlet.com/ddcsincheon/breakout-room/8G57v1gKJ3Yl2dVX-o4ZnXBWBegrgvNda')" class="p-4 bg-blue-100 hover:bg-blue-200 text-blue-700 font-black rounded-2xl border-2 border-blue-200 shadow-sm transition-all text-xl">6-1</button>
+            <button onclick="openPadlet('6-2', 'https://padlet.com/ddcsincheon/breakout-room/jzJX4E5B35974bnO-o4ZnXBWBegrgvNda')" class="p-4 bg-blue-100 hover:bg-blue-200 text-blue-700 font-black rounded-2xl border-2 border-blue-200 shadow-sm transition-all text-xl">6-2</button>
+            <button onclick="openPadlet('6-3', 'https://padlet.com/ddcsincheon/breakout-room/PkpnqAaeNa5lqD0B-o4ZnXBWBegrgvNda')" class="p-4 bg-blue-100 hover:bg-blue-200 text-blue-700 font-black rounded-2xl border-2 border-blue-200 shadow-sm transition-all text-xl">6-3</button>
+            <button onclick="openPadlet('6-4', 'https://padlet.com/ddcsincheon/breakout-room/Arng4Mk6XkBgqK6p-o4ZnXBWBegrgvNda')" class="p-4 bg-blue-100 hover:bg-blue-200 text-blue-700 font-black rounded-2xl border-2 border-blue-200 shadow-sm transition-all text-xl">6-4</button>
+        </div>
+        <div class="bottom-action-area mt-8">
+            <button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button>
+        </div>
+        <div id="padlet-container" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h4 id="selected-class-title" class="text-xl font-bold text-green-800"></h4>
+                <button onclick="closePadlet()" class="px-4 py-2 bg-gray-500 text-white rounded-xl font-bold">뒤로가기</button>
+            </div>
+            <div class="rounded-[25px] overflow-hidden border-4 border-green-200 shadow-inner" style="height: 600px;">
+                <iframe id="padlet-iframe" src=""
+                        frameborder="0"
+                        allow="camera;microphone;geolocation"
+                        style="width: 100%; height: 100%; display: block; background: #f8fafc;"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 패들렛 열기 함수
+        function openPadlet(className, url) {
+            document.getElementById('class-selector').classList.add('hidden'); // 버튼 숨기기
+            document.getElementById('padlet-container').classList.remove('hidden'); // 패들렛 보이기
+            document.getElementById('padlet-iframe').src = url; // 주소 넣기
+            document.getElementById('selected-class-title').innerText = "📍 " + className + " 게시판"; // 제목 바꾸기
+        }
+
+        // 뒤로가기 함수
+        function closePadlet() {
+            document.getElementById('class-selector').classList.remove('hidden'); // 버튼 보이기
+            document.getElementById('padlet-container').classList.add('hidden'); // 패들렛 숨기기
+            document.getElementById('padlet-iframe').src = ""; // 메모리 절약을 위해 주소 비우기
+        }
+    </script>
+    <div id="page-studyhome" class="page">
+        <h2 class="font-black text-2xl text-center mb-6 text-gray-700">어떤 내용을 배워 볼까요?</h2>
+        <div class="space-y-4">
+            <button onclick="navigateTo('recycle')" class="sub-btn"><span>📝 4학년 분리배출 학습터</span><span>▶</span></button>
+            <button onclick="navigateTo('study5')" class="sub-btn"><span>🌍 5학년 지구위기 학습터</span><span>▶</span></button>
+            <button onclick="navigateTo('study6')" class="sub-btn"><span>🤝 6학년 지속가능 학습터</span><span>▶</span></button>
+        </div>
+        <div class="bottom-action-area mt-8">
+            <button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button>
+        </div>
+    </div>
+    <div id="page-quiz-home" class="page">
+        <h2 class="font-black text-3xl text-green-700 text-center mb-8">어떤 퀴즈를 풀까요?</h2>
+        <div class="space-y-4">
+            
+            <button onclick="navigateTo('quiz-recycle')" class="sub-btn"><span>📝 4학년 분리배출 퀴즈</span><span>▶</span></button>
+            <button onclick="startVirtueQuiz()" class="sub-btn"><span>✨ 5학년 덕목 분리배출 퀴즈</span><span>▶</span></button>
+            <button onclick="startSustainQuiz()" class="sub-btn bg-indigo-50 border-indigo-200"><span>🤝 6학년 지속가능 공존 퀴즈</span><span>▶</span></button>
+        </div>
+        <div class="bottom-action-area mt-8">
+            <button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button>
+        </div>
+    </div>
+    <div id="page-recycle" class="page">
+        <h2 class="font-black text-2xl text-center mb-6 text-gray-700">무엇을 분리배출 할까요?</h2>
+        <div class="grid grid-cols-2 gap-4" id="item-grid"></div>
+        <div class="bottom-action-area mt-8">
+            <button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button>
+        </div><div class="bottom-action-area mt-8">
+            <button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button>
+        </div>
+    </div>
+    <!-- 3. [새로 추가] 5학년 지구위기 학습터 상세 화면 -->
+    <div id="page-study5" class="page">
+        <div class="bg-gradient-to-br from-green-500 to-emerald-700 p-8 rounded-[40px] mb-6 shadow-xl text-center text-white">
+            <span class="text-6xl animate-pulse">🌋</span>
+            <h3 class="text-3xl font-black mt-3 mb-2">5학년 지구위기 학습터</h3>
+            <p class="text-lg opacity-90 font-bold leading-tight">지구가 보내는 SOS 경고에 귀를 기울이고,<br>위기를 극복할 도덕적 성찰을 시작해 봐요.</p>
+        </div>
+
+        <div class="space-y-6">
+
+            <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm transition-all hover:border-emerald-500">
+                <div class="flex items-center space-x-3 mb-3">
+                    <span class="text-3xl">🔥</span>
+                    <h4 class="font-black text-slate-800 text-xl">가. 탄소 이야기: 누가 지구를 뜨겁게 만들었나</h4>
+                </div>
+                <p class="text-gray-600 leading-relaxed font-semibold break-keep">
+                    산업화 이후 인간이 편안함을 위해 태운 화석 연료가 거대한 탄소막을 형성했습니다. 24시간 멈추지 않는 공장과 자동차, 심지어 우리가 무심코 사용하는 디지털 전력까지 온실가스를 뿜어내며 지구의 온도를 빠르게 올리고 있습니다. 결국 지구를 뜨겁게 만든 주범은 인간의 끝없는 <span class="text-emerald-600 font-bold">[편리함과 욕심]</span>입니다.
+                    <button onclick="window.open('https://www.youtube.com/watch?v=Af2an3IuNHw')"
+                            class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-colors border border-emerald-200 text-sm">
+                        <span>📺 관련 뉴스 영상 시청하기</span>
+                        <span class="text-xs">▶</span>
+                    </button>
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm transition-all hover:border-emerald-500">
+                <div class="flex items-center space-x-3 mb-3">
+                    <span class="text-3xl">⚠️</span>
+                    <h4 class="font-black text-slate-800 text-xl">나. 2년도 남지 않았다: 6차 대멸종은 진행 중</h4>
+                </div>
+                <p class="text-gray-600 leading-relaxed font-semibold break-keep">
+                    과학자들은 지구 기온 상승의 임계점까지 시간이 얼마 남지 않았다고 경고합니다. 생태계의 균형이 무너지면서 매일 수많은 동식물이 지구상에서 영원히 사라지는 '6차 대멸종'이 소리 없이 진행되고 있습니다. 자연은 생명체들이 서로 촘촘하게 엮여 있는 공동체이기에, 동식물의 멸종은 곧 인간의 생존 위기로 되돌아옵니다.
+                    <button onclick="window.open('https://www.youtube.com/watch?v=BXzEcJAIWeU')"
+                            class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-colors border border-emerald-200 text-sm">
+                        <span>📺 관련 뉴스 영상 시청하기</span>
+                        <span class="text-xs">▶</span>
+                    </button>
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm transition-all hover:border-emerald-500">
+                <div class="flex items-center space-x-3 mb-3">
+                    <span class="text-3xl">🏜️</span>
+                    <h4 class="font-black text-slate-800 text-xl">다. 세계 곳곳은 사막화: 지구 온난화가 주범</h4>
+                </div>
+                <p class="text-gray-600 leading-relaxed font-semibold break-keep">
+                    울창했던 숲과 푸른 초원이 메마른 모래시대로 변하고 있습니다. 지구 온난화로 인해 비가 내리지 않는 가뭄 기간이 길어지면서 전 세계 토지의 3분의 1 이상이 사막화 위기에 처했습니다. 식물이 자랄 땅이 사라지면 식량 부족 문제가 발생하고, 우리 삶의 터전마저 황폐해지게 됩니다.
+                    <button onclick="window.open('https://www.youtube.com/watch?v=jkdvA7vdwyY')"
+                            class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-colors border border-emerald-200 text-sm">
+                        <span>📺 관련 뉴스 영상 시청하기</span>
+                        <span class="text-xs">▶</span>
+                    </button>
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm transition-all hover:border-emerald-500">
+                <div class="flex items-center space-x-3 mb-3">
+                    <span class="text-3xl">😷</span>
+                    <h4 class="font-black text-slate-800 text-xl">라. 가스실 방불케 하는 인도 대기</h4>
+                </div>
+                <p class="text-gray-600 leading-relaxed font-semibold break-keep">
+                    인도의 일부 대도시들은 겨울철마다 짙은 스모그와 초미세먼지로 뒤덮여 도시 전체가 가스실처럼 변합니다. 숨을 쉴 때마다 독성 물질이 몸속으로 들어와 수많은 어린이와 시민들이 호흡기 질환으로 고통받고 있습니다. 내가 누리는 안락한 일상이 시공간을 넘어 지구 반대편 이웃에게 극심한 고통을 줄 수 있음을 기억해야 합니다.
+                    겨울철마다 짙은 스모그와 초미세먼지로 뒤덮여 도시 전체가 가스실처럼 변합니다. 숨을 쉴 때마다 독성 물질이 몸속으로 들어와 수많은 어린이와 시민들이 호흡기 질환으로 고통받고 있습니다. 내가 누리는 안락한 일상이 시공간을 넘어 지구 반대편 이웃에게 극심한 고통을 줄 수 있음을 기억해야 합니다.
+                    <button onclick="window.open('https://www.youtube.com/watch?v=IthnZ9zKHo4')"
+                            class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-colors border border-emerald-200 text-sm">
+                        <span>📺 관련 뉴스 영상 시청하기</span>
+                        <span class="text-xs">▶</span>
+                    </button>
+                </p>
+            </div>
+            </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm transition-all hover:border-emerald-500">
+            <div class="flex items-center space-x-3 mb-3">
+                <span class="text-3xl">🪱</span>
+                <h4 class="font-black text-slate-800 text-xl">마. 토양오염과 지구온난화의 연결고리</h4>
+            </div>
+            <p class="text-gray-600 leading-relaxed font-semibold break-keep">
+                땅속 토양은 지구상의 막대한 탄소를 붙잡아 두는 소중한 저장고입니다. 하지만 우리가 화학 물질을 남용하고 쓰레기를 무분별하게 매립하여 토양을 오염시키면, 땅은 탄소를 붙잡아 두는 능력을 잃어버립니다. 결국 땅속에 갇혀 있어야 할 탄소가 대기 중으로 뿜어져 나와 지구 온난화를 더욱 가속화하는 악순환을 만듭니다.
+                <button onclick="window.open('https://www.youtube.com/watch?v=nzZad1LE1O8')"
+                        class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-colors border border-emerald-200 text-sm">
+                    <span>📺 관련 뉴스 영상 시청하기</span>
+                    <span class="text-xs">▶</span>
+                </button>
+            </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm transition-all hover:border-emerald-500">
+            <div class="flex items-center space-x-3 mb-3">
+                <span class="text-3xl">🚰</span>
+                <h4 class="font-black text-slate-800 text-xl">바. "물이 없어요"... 전 세계 20억 명 '대소변 오염' 식수 마셔 (YTN)</h4>
+            </div>
+            <p class="text-gray-600 leading-relaxed font-semibold break-keep">
+                기후 위기로 깨끗한 상수도가 파괴되면서 전 세계 인구의 4분의 1에 달하는 20억 명의 사람들이 대소변이나 오물로 오염된 위험한 물을 식수로 마시고 있다는 YTN 보도가 있었습니다. 상하수도 시설이 없는 빈곤 지역의 아이들은 수인성 질병의 위험에 무방비로 노출되어 있습니다. 물을 낭비하지 않는 <span class="text-emerald-600 font-bold">[성실함과 절제]</span>가 왜 인류를 위한 도덕적 의무인지 보여주는 현장입니다.
+                <button onclick="window.open('https://www.youtube.com/watch?v=TIU-M_2yteI')"
+                        class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-colors border border-emerald-200 text-sm">
+                    <span>📺 관련 뉴스 영상 시청하기</span>
+                    <span class="text-xs">▶</span>
+                </button>
+
+            </p>
+        </div>
+        <<div class="mt-8 mb-4">
+            <button onclick="navigateTo('study5-match')" class="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white font-black py-5 rounded-3xl text-xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center space-x-3">
+                <span>🌋 지구 위기의 원인과 극복 알아보기</span>
+                <span class="text-base">▶</span>
+            </button>
+        </div>
+
+        <div class="bottom-action-area mt-8">
+            <button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button>
+        </div>
+    </div>
+    <!-- ==========================================================
+             🌍 [완성형] 5학년 위기 vs 덕목 유목화 분류 매칭 게임판
+             ========================================================== -->
+    <div id="page-study5-match" class="page">
+
+        <div class="bg-gradient-to-br from-emerald-600 to-green-700 p-6 rounded-[35px] mb-6 shadow-md text-center text-white">
+            <span class="text-5xl">🧩</span>
+            <h3 class="text-2xl font-black mt-2 mb-1">희망 씨앗 카드 분류하기</h3>
+            <p class="text-sm opacity-90 font-bold">오른쪽의 카드들을 선택해서 왼쪽의 알맞은 바구니에 담아보세요!</p>
+        </div>
+
+        <!-- 메인 게임판 레이아웃 -->
+        <div class="grid grid-cols-12 gap-4 items-start mb-6">
+
+            <!-- 👈 왼쪽 구역: 카드를 수집하는 두 개의 큰 바구니 (각 5개씩 슬롯) -->
+            <div class="col-span-7 bg-white p-4 rounded-3xl border-2 border-slate-200 shadow-sm grid grid-cols-2 gap-4">
+
+                <!-- [왼쪽 바구니 1] 위기의 원인 수집함 (5칸) -->
+                <div class="space-y-3">
+                    <!-- 🚩 (0/5) 군더더기 텍스트 완전 제거하여 시인성 확보 -->
+                    <div class="text-center font-black text-sm text-amber-800 bg-amber-100 py-2 rounded-xl mb-1">
+                        ⚠️ 위기의 원인
+                    </div>
+                    <div id="basket-cause-0" class="border-2 border-dashed border-slate-300 h-14 rounded-xl flex items-center justify-center text-xs font-bold text-slate-400 bg-slate-50 cursor-pointer hover:bg-slate-100 text-center p-1">위기 칸 1</div>
+                    <div id="basket-cause-1" class="border-2 border-dashed border-slate-300 h-14 rounded-xl flex items-center justify-center text-xs font-bold text-slate-400 bg-slate-50 cursor-pointer hover:bg-slate-100 text-center p-1">위기 칸 2</div>
+                    <div id="basket-cause-2" class="border-2 border-dashed border-slate-300 h-14 rounded-xl flex items-center justify-center text-xs font-bold text-slate-400 bg-slate-50 cursor-pointer hover:bg-slate-100 text-center p-1">위기 칸 3</div>
+                    <div id="basket-cause-3" class="border-2 border-dashed border-slate-300 h-14 rounded-xl flex items-center justify-center text-xs font-bold text-slate-400 bg-slate-50 cursor-pointer hover:bg-slate-100 text-center p-1">위기 칸 4</div>
+                    <div id="basket-cause-4" class="border-2 border-dashed border-slate-300 h-14 rounded-xl flex items-center justify-center text-xs font-bold text-slate-400 bg-slate-50 cursor-pointer hover:bg-slate-100 text-center p-1">위기 칸 5</div>
+                </div>
+
+                <!-- [왼쪽 바구니 2] 희망 씨앗 덕목 수집함 (5칸) -->
+                <div class="space-y-3">
+                    <!-- 🚩 (0/5) 군더더기 텍스트 완전 제거하여 디자인 최적화 -->
+                    <div class="text-center font-black text-sm text-emerald-800 bg-emerald-100 py-2 rounded-xl mb-1">
+                        🌱 희망 씨앗
+                    </div>
+                    <div id="basket-virtue-0" class="border-2 border-dashed border-slate-300 h-14 rounded-xl flex items-center justify-center text-xs font-bold text-slate-400 bg-slate-50 cursor-pointer hover:bg-slate-100 text-center p-1">덕목 칸 1</div>
+                    <div id="basket-virtue-1" class="border-2 border-dashed border-slate-300 h-14 rounded-xl flex items-center justify-center text-xs font-bold text-slate-400 bg-slate-50 cursor-pointer hover:bg-slate-100 text-center p-1">덕목 칸 2</div>
+                    <div id="basket-virtue-2" class="border-2 border-dashed border-slate-300 h-14 rounded-xl flex items-center justify-center text-xs font-bold text-slate-400 bg-slate-50 cursor-pointer hover:bg-slate-100 text-center p-1">덕목 칸 3</div>
+                    <div id="basket-virtue-3" class="border-2 border-dashed border-slate-300 h-14 rounded-xl flex items-center justify-center text-xs font-bold text-slate-400 bg-slate-50 cursor-pointer hover:bg-slate-100 text-center p-1">덕목 칸 4</div>
+                    <div id="basket-virtue-4" class="border-2 border-dashed border-slate-300 h-14 rounded-xl flex items-center justify-center text-xs font-bold text-slate-400 bg-slate-50 cursor-pointer hover:bg-slate-100 text-center p-1">덕목 칸 5</div>
+                </div>
+            </div>
+
+            <!-- 👉 오른쪽 구역: 카드 주머니 -->
+            <div class="col-span-5 bg-slate-50 p-4 rounded-3xl border-2 border-slate-200 shadow-inner">
+                <div class="text-xs font-black text-slate-600 mb-3 flex items-center justify-between">
+                    <span>🃏 카드 주머니 (선택 후 왼쪽 빈칸 클릭)</span>
+                </div>
+                <div id="unified-card-pool" class="grid grid-cols-1 gap-2.5"></div>
+            </div>
+
+        </div>
+
+        <!-- 기능 제어 버튼 인터페이스 세트 -->
+        <div class="space-y-2.5">
+            <button onclick="checkClassificationResult()" class="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white font-black py-4 rounded-2xl text-lg shadow-md hover:scale-[1.01] transition-all">
+                ✅ 올바르게 분류했는지 확인하기
+            </button>
+
+            <button onclick="if(confirm('진행 중인 분류 미션을 모두 리셋하고 카드를 다시 섞으시겠습니까?')) initClassificationGame();" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-black py-4 rounded-2xl text-lg shadow-md hover:scale-[1.01] transition-all">
+                🔄 카드 판 초기화 하기
+            </button>
+        </div>
+
+        <!-- 하단 뒤로가기 참고 바 (정상 위치 1개 고정 완료) -->
+        <div class="bottom-action-area mt-6">
+            <button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button>
+        </div>
+    </div>
+    <div id="page-study6" class="page">
+        <div class="bg-gradient-to-br from-blue-500 to-indigo-700 p-8 rounded-[40px] mb-6 shadow-xl text-center text-white">
+            <span class="text-6xl animate-pulse">🤝</span>
+            <h3 class="text-3xl font-black mt-3 mb-2">6학년 지속가능 학습터</h3>
+            <p class="text-lg opacity-90 font-bold leading-tight">우리 모두의 미래를 위한 책임감 있는 선택!<br>시간과 공간을 넘어 미래 세대와 공존하는 법을 배웁니다.</p>
+        </div>
+        <div class="space-y-6">
+
+            <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm transition-all hover:border-indigo-500">
+                <div class="flex items-center space-x-3 mb-3">
+                    <span class="text-3xl">📖</span>
+                    <h4 class="font-black text-slate-800 text-xl">가. 인간의 삶이 지속된다는 것의 진짜 의미</h4>
+                </div>
+                <p class="text-gray-600 leading-relaxed font-semibold break-keep">
+                    지속가능한 삶이란 나 혼자, 혹은 우리 세대만 잘 먹고 잘 사는 것이 아닙니다. 과거, 현재, 미래로 여러 세대가 끊임없이 이어져 공존하는 것을 뜻합니다. 자연을 단순한 개발의 대상으로 여기며 훼손하는 인간의 욕심을 내려놓고, 지구 생태계의 한계를 인정하며 자연을 보호하는 태도가 필요합니다.
+                    <button onclick="window.open('https://www.youtube.com/watch?v=KDT5pUlRD0U')"
+                            class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-colors border border-emerald-200 text-sm">
+                        <span>📺 관련 뉴스 영상 시청하기</span>
+                        <span class="text-xs">▶</span>
+                    </button>
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm transition-all hover:border-indigo-500">
+                <div class="flex items-center space-x-3 mb-3">
+                    <span class="text-3xl">🌱</span>
+                    <h4 class="font-black text-slate-800 text-xl">나. 미래 세대와의 공존을 이끄는 '녹색 넛지'</h4>
+                </div>
+                <p class="text-gray-600 leading-relaxed font-semibold break-keep">
+                    아직 태어나지 않은 후손들의 권리를 지키기 위해 우리는 환경 보호를 무작위로 강요하기보다 자발적인 변화를 유도하는 디지털 '녹색 넛지'를 활용할 수 있습니다. 일상 속에서 부드럽게 친환경 소비를 유도하는 구조적 장치들은 지구촌 전체의 평화와 상생을 지키는 든든한 버팀목이 됩니다.
+                    <button onclick="window.open('https://www.youtube.com/watch?v=55614WZSG_E')"
+                            class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-colors border border-emerald-200 text-sm">
+                        <span>📺 관련 뉴스 영상 시청하기</span>
+                        <span class="text-xs">▶</span>
+                    </button>
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm transition-all hover:border-indigo-500">
+                <div class="flex items-center space-x-3 mb-3">
+                    <span class="text-3xl">🐝</span>
+                    <h4 class="font-black text-slate-800 text-xl">다. 지구 온난화의 소리 없는 재앙: 사라지는 꿀벌</h4>
+                </div>
+                <p class="text-gray-600 leading-relaxed font-semibold break-keep">
+                    기후 변화로 개화 시기가 뒤틀리고 생태계가 교란되면서 지구상에서 꿀벌들이 빠른 속도로 실종되고 있습니다. 꿀벌은 지구 식물의 수분을 담당하는 핵심 매개체이므로, 꿀벌의 소멸은 결국 무서운 식량 위기와 생태계 붕괴를 초래하여 인류의 생존 자체를 위협하게 됩니다.
+                    <button onclick="window.open('https://www.youtube.com/watch?v=SZzS0JyT8gI')"
+                            class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-colors border border-emerald-200 text-sm">
+                        <span>📺 관련 뉴스 영상 시청하기</span>
+                        <span class="text-xs">▶</span>
+                    </button>
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm transition-all hover:border-indigo-500">
+                <div class="flex items-center space-x-3 mb-3">
+                    <span class="text-3xl">🌳</span>
+                    <h4 class="font-black text-slate-800 text-xl">라. 지구의 허파에서 탄소 배출원으로: 기능을 잃은 아마존</h4>
+                </div>
+                <p class="text-gray-600 leading-relaxed font-semibold break-keep">
+                    무분별한 벌목과 화재, 개발 독점으로 인해 '지구의 허파'라 불리던 아마존 열대우림이 파괴되고 있습니다. 이제 아마존은 이산화탄소를 흡수하는 양보다, 파괴되며 뿜어내는 탄소의 양이 더 많아지는 심각한 기능 상실 상태에 직면했습니다. 무분별한 토지 개발과 소비가 부른 인류의 위기입니다.
+                    <button onclick="window.open('https://www.youtube.com/watch?v=ctytX-oG_sY')"
+                            class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-colors border border-emerald-200 text-sm">
+                        <span>📺 관련 뉴스 영상 시청하기</span>
+                        <span class="text-xs">▶</span>
+                    </button>
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm transition-all hover:border-indigo-500">
+                <div class="flex items-center space-x-3 mb-3">
+                    <span class="text-3xl">🏝️</span>
+                    <h4 class="font-black text-slate-800 text-xl">마. 우리가 버린 플라스틱이 만든 거대한 쓰레기 나라</h4>
+                </div>
+                <p class="text-gray-600 leading-relaxed font-semibold break-keep">
+                    우리가 일상에서 무심코 쓰고 버린 일회용 플라스틱 쓰레기들이 바다 해류를 타고 모여 대한민국 영토의 수십 배에 달하는 거대한 '태평양 거대 쓰레기 지대(GPGP)'라는 가상의 나라를 만들었습니다. 이 미세 플라스틱은 바다 생물들의 몸속에 축적되어 결국 우리의 밥상 위로 고스란히 돌아옵니다.
+                    <button onclick="window.open('https://www.youtube.com/watch?v=6vSE2eBh-Do')"
+                            class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-colors border border-emerald-200 text-sm">
+                        <span>📺 관련 뉴스 영상 시청하기</span>
+                        <span class="text-xs">▶</span>
+                    </button>
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm transition-all hover:border-indigo-500">
+                <div class="flex items-center space-x-3 mb-3">
+                    <span class="text-3xl">🧊</span>
+                    <h4 class="font-black text-slate-800 text-xl">바. 지구 온도 '1도' 상승의 참혹한 대가와 빙하 붕괴</h4>
+                </div>
+                <p class="text-gray-600 leading-relaxed font-semibold break-keep">
+                    지구 평균 온도가 산업화 이전보다 1도 오르면서 전 세계적으로 대형 산불과 극단적인 가뭄이 고착화되었습니다. 또한 북극과 남극의 거대한 빙하 붕괴가 가속화되어 해수면이 빠르게 상승하고 있습니다. 해안 도시들의 침수 위기는 더 이상 먼 미래의 시나리오가 아닌 현재 진행형 재앙입니다.
+                    <button onclick="window.open('https://www.youtube.com/watch?v=dhaERp8Z0Rs')"
+                            class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-colors border border-emerald-200 text-sm">
+                        <span>📺 관련 뉴스 영상 시청하기(대형 산불)</span>
+                        <span class="text-xs">▶</span>
+                    </button>
+                    <button onclick="window.open('https://www.youtube.com/watch?v=bTzTRv_eKOM')"
+                            class="mt-4 w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition-colors border border-emerald-200 text-sm">
+                        <span>📺 관련 뉴스 영상 시청하기(빙하 붕괴)</span>
+                        <span class="text-xs">▶</span>
+                    </button>
+
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-8 mb-4">
+            <button onclick="navigateTo('study6-match')" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black py-5 rounded-3xl text-xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center space-x-3">
+                <span>🤝 지속가능한 삶의 의미와 노력 알아보기</span>
+                <span class="text-base">▶</span>
+            </button>
+        </div>
+
+        <div class="bottom-action-area">
+            <button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button>
+        </div>
+    </div>
+
+
+    <!-- ==========================================================
+         🤝 6. [최종 수정본] 6학년 지속가능한 삶과 노력 분류 매칭 게임판
+         ========================================================== -->
+    <div id="page-study6-match" class="page">
+
+        <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-[35px] mb-6 shadow-md text-center text-white">
+            <span class="text-5xl">🧩</span>
+            <h3 class="text-2xl font-black mt-2 mb-1">지속가능한 삶과 노력</h3>
+            <p class="text-sm opacity-90 font-bold">교과서 대화를 읽고, 오른쪽 카드 주머니에서 알맞은 낱말을 골라 왼쪽 빈칸을 완성해 보세요!</p>
+        </div>
+
+        <!-- 메인 인터랙션 그리드 레이아웃 -->
+        <div class="grid grid-cols-12 gap-4 items-start mb-6">
+
+            <!-- 👈 왼쪽 구역: 교과서 제시문 상자와 빈칸 채우기 문장 -->
+            <div class="col-span-7 space-y-6">
+
+                <!-- ════════ [주제 1] 의미 탐구 단락 ════════ -->
+                <div class="bg-white p-5 rounded-3xl border-2 border-slate-200 shadow-sm space-y-4">
+                    <!-- 🟥 교과서 수연·민규·소희 대화 상자 분리 구현 -->
+                    <div class="bg-red-50 p-4 rounded-2xl border border-red-100 space-y-2 text-xs font-bold text-slate-700 leading-relaxed">
+                        <div class="text-amber-800 font-black text-sm mb-1">💬 주제 1. 인간의 삶이 지속된다는 것의 의미</div>
+                        <div><span class="text-red-600 font-black">수연:</span> 인간이 자연을 이용하여 계속 개발해야 인간의 삶이 지속된다는 뜻이 아닐까?</div>
+                        <div><span class="text-red-600 font-black">민규:</span> 인간도 생태계의 일부인데 자연을 훼손하면서 개발한다면 우리의 삶이 지속가능할까?</div>
+                        <div><span class="text-red-600 font-black">소희:</span> 지속가능한 삶에 대한 고민에는 현재 세대뿐만 아니라 미래 세대까지 포함해야 하지 않을까?</div>
+                    </div>
+
+                    <!-- 📝 괄호 빈칸 퀴즈 (답이 노출되지 않고 대기하는 상태) -->
+                    <p class="text-slate-700 font-black text-sm leading-loose break-keep bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        📌 인간의 삶이 지속된다는 것은 어떤 의미일까요?<br>
+                        과거, 현재, 미래로 여러
+                        <span id="s6-slot-세대" class="inline-flex border-2 border-dashed border-blue-400 bg-white text-blue-600 px-3 py-0.5 mx-1 rounded-lg text-xs font-black min-w-[65px] h-7 justify-center items-center cursor-pointer transition-all">?</span>가 이어져
+                        <span id="s6-slot-공존" class="inline-flex border-2 border-dashed border-blue-400 bg-white text-blue-600 px-3 py-0.5 mx-1 rounded-lg text-xs font-black min-w-[65px] h-7 justify-center items-center cursor-pointer transition-all">?</span>하며 자연을
+                        <span id="s6-slot-보호" class="inline-flex border-2 border-dashed border-blue-400 bg-white text-blue-600 px-3 py-0.5 mx-1 rounded-lg text-xs font-black min-w-[65px] h-7 justify-center items-center cursor-pointer transition-all">?</span>하며 번영한다는 의미입니다.
+                    </p>
+                </div>
+
+                <!-- ════════ [주제 2] 실천 노력 단락 ════════ -->
+                <div class="bg-white p-5 rounded-3xl border-2 border-slate-200 shadow-sm space-y-4">
+                    <!-- 🟦 교과서 영우·지혜·예지·기범 대화 상자 분리 구현 -->
+                    <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 space-y-2 text-xs font-bold text-slate-700 leading-relaxed">
+                        <div class="text-indigo-800 font-black text-sm mb-1">💬 주제 2. 지속가능한 삶을 위해 할 수 있는 노력</div>
+                        <div><span class="text-indigo-600 font-black">영우:</span> 자연이 훼손된다면 과연 인간이 살 수 있을까? 자연을 보호해야 우리의 삶이 지속될 수 있을 거라 생각해.</div>
+                        <div><span class="text-indigo-600 font-black">지혜:</span> 사회적인 노력도 필요해. 교육, 인권, 건강, 평등 등의 문제도 지속가능하도록 해결하고 발전시켜야 하지 않을까?</div>
+                        <div><span class="text-indigo-600 font-black">예지:</span> 자연 보호와 사회적 노력도 필요하지만 인간이 더 나은 삶을 살기 위해서는 경제 개발도 중요해.</div>
+                        <div><span class="text-indigo-600 font-black">기범:</span> 생태계 보호, 사회적 노력, 경제 개발은 모두 지속가능한 삶에 있어서 중요해. 어떻게 하면 이 세 가지를 조화롭게 실천할 수 있을까?</div>
+                    </div>
+
+                    <!-- 📝 괄호 빈칸 퀴즈 (답이 노출되지 않고 대기하는 상태) -->
+                    <p class="text-slate-700 font-black text-sm leading-loose break-keep bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        📌 지속가능한 삶을 위한 노력은 인간도
+                        <span id="s6-slot-자연" class="inline-flex border-2 border-dashed border-indigo-400 bg-white text-indigo-600 px-3 py-0.5 mx-1 rounded-lg text-xs font-black min-w-[65px] h-7 justify-center items-center cursor-pointer transition-all">?</span>의 한 부분이기에 공존하여 살아가려고 노력하며 경제, 문화,
+                        <span id="s6-slot-교육" class="inline-flex border-2 border-dashed border-indigo-400 bg-white text-indigo-600 px-3 py-0.5 mx-1 rounded-lg text-xs font-black min-w-[65px] h-7 justify-center items-center cursor-pointer transition-all">?</span>, 인권, 평등 등의 사회 전반적인 영역에서 노력이 필요합니다.
+                    </p>
+                </div>
+
+                <p class="text-[11px] font-bold text-slate-400 text-center italic">※ 빈칸을 터치하면 장착했던 카드가 다시 주머니로 회수됩니다.</p>
+            </div>
+
+            <!-- 👉 오른쪽 구역: 9가지 단어가 마구 뒤섞여 나오는 카드 주머니 풀 -->
+            <div class="col-span-5 bg-slate-50 p-4 rounded-3xl border-2 border-slate-200 shadow-inner">
+                <div class="text-xs font-black text-slate-600 mb-3 text-center">
+                    <span>🃏 카드 주머니 (선택 후 왼쪽 빈칸 클릭)</span>
+                </div>
+                <!-- 9가지 키워드가 공유되어 출력되는 공간 -->
+                <div id="s6-card-pool" class="grid grid-cols-1 gap-2"></div>
+            </div>
+
+        </div>
+
+        <!-- 제어 버튼 단축 인터페이스 -->
+        <div class="space-y-2.5">
+            <button onclick="checkS6MatchResult()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black py-4 rounded-2xl text-lg shadow-md hover:scale-[1.01] transition-all">
+                ✅ 올바르게 문장을 완성했는지 확인하기
+            </button>
+
+            <button onclick="if(confirm('진행 중인 분류 미션을 모두 리셋하고 카드를 다시 섞으시겠습니까?')) initS6Game();" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-black py-4 rounded-2xl text-lg shadow-md hover:scale-[1.01] transition-all">
+                🔄 카드 판 초기화 하기
+            </button>
+        </div>
+
+        <div class="bottom-action-area mt-6">
+            <button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button>
+        </div>
+    </div>
+
+    <script>
+        // 교과서 전용 가치풀 9키워드 원본 데이터베이스 세트
+        const s6KeywordsData = [
+            { text: "세대", target: "세대" },
+            { text: "공존", target: "공존" },
+            { text: "보호", target: "보호" },
+            { text: "자연", target: "자연" },
+            { text: "교육", target: "교육" },
+            { text: "개발", target: "fake" },
+            { text: "평화", target: "fake" },
+            { text: "욕심", target: "fake" },
+            { text: "소비", target: "fake" },
+            { text: "훼손", target: "fake" }
+        ];
+
+        let currentS6SelectedCard = null; // 선택된 6학년 카드 버퍼 임시 저장소
+
+        // 🎮 6학년 게임판 초기화 함수
+        function initS6Game() {
+            currentS6SelectedCard = null;
+            const slots = ["세대", "공존", "보호", "자연", "교육"];
+
+            // 🚩 핵심: 처음 로딩 시 정답 글자가 노출되지 않고 물음표(?) 점선 상자로 초기화!
+            slots.forEach(id => {
+                const targetSlot = document.getElementById(`s6-slot-${id}`);
+                if (targetSlot) {
+                    targetSlot.innerText = "?"; // 글자가 아닌 물음표 배치!
+                    targetSlot.className = "inline-flex border-2 border-dashed border-slate-300 bg-slate-50 text-slate-400 px-3 py-0.5 mx-1 rounded-lg text-xs font-black min-w-[65px] h-7 justify-center items-center cursor-pointer transition-all";
+                    targetSlot.dataset.placedText = "";
+                }
+            });
+
+            // 2. 10가지 키워드 무작위 난수 기반 셔플링
+            const shuffledPool = [...s6KeywordsData].sort(() => Math.random() - 0.5);
+
+            // 3. 우측 단일 카드 주머니 주입 생성
+            const container = document.getElementById('s6-card-pool');
+            container.innerHTML = "";
+
+            shuffledPool.forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.id = `s6-master-card-${idx}`;
+                div.className = "p-2.5 bg-white border-2 border-slate-200 hover:border-indigo-400 rounded-xl font-bold text-xs text-slate-700 cursor-pointer shadow-sm text-center transition-all";
+                div.innerText = item.text;
+                div.onclick = () => selectS6CardFromPool(idx, div);
+                container.appendChild(div);
+            });
+        }
+
+        // 🃏 우측 주머니 카드 클릭 이벤트 연동 기믹
+        function selectS6CardFromPool(uniqueIndex, element) {
+            document.querySelectorAll('#s6-card-pool div').forEach(el => {
+                el.classList.remove('ring-4', 'ring-indigo-500');
+            });
+
+            currentS6SelectedCard = { idx: uniqueIndex, text: element.innerText };
+            element.classList.add('ring-4', 'ring-indigo-500');
+        }
+
+        // 📥 왼쪽 문장속 괄호 칸에 카드를 배치 결합하는 컨트롤러
+        function s6SlotClickProcessor(slotId) {
+            const slot = document.getElementById(`s6-slot-${slotId}`);
+            if (!slot) return;
+
+            // 회수 모드: 이미 채워진 슬롯을 다시 누르면 원래 카드를 주머니로 반환
+            if (slot.dataset.placedText) {
+                const poolDivs = document.querySelectorAll('#s6-card-pool div');
+                for (let div of poolDivs) {
+                    if (div.innerText === slot.dataset.placedText && div.classList.contains('hidden')) {
+                        div.classList.remove('hidden');
+                        break;
+                    }
+                }
+                slot.innerText = slotId;
+                slot.dataset.placedText = "";
+                slot.className = "inline-flex border-2 border-dashed border-slate-300 bg-slate-50 text-slate-400 px-3 py-1 mx-1 rounded-lg text-xs font-black min-w-[75px] justify-center items-center cursor-pointer h-7 transition-all";
+                return;
+            }
+
+            // 장착 모드
+            if (!currentS6SelectedCard) {
+                alert("오른쪽 카드 주머니에서 괄호 안에 집어넣을 단어 카드를 먼저 클릭해 주세요!");
+                return;
+            }
+
+            slot.innerText = currentS6SelectedCard.text;
+            slot.dataset.placedText = currentS6SelectedCard.text;
+            slot.className = "inline-flex bg-indigo-100 border-2 border-indigo-400 text-indigo-900 px-3 py-1 mx-1 rounded-lg text-xs font-black min-w-[75px] justify-center items-center cursor-pointer shadow-inner h-7 transition-all";
+
+            const usedCard = document.getElementById(`s6-master-card-${currentS6SelectedCard.idx}`);
+            if (usedCard) usedCard.classList.add('hidden');
+
+            currentS6SelectedCard = null; // 단기 버퍼 메모리 클리어
+        }
+
+        // 슬롯 바인딩 매핑 가동
+        ["세대", "공존", "보호", "자연", "교육"].forEach(id => {
+            const target = document.getElementById(`s6-slot-${id}`);
+            if (target) target.onclick = () => s6SlotClickProcessor(id);
+        });
+
+        // 🏆 6학년 문장 검증용 다각 채점 판정 엔진
+        function checkS6MatchResult() {
+            const slots = ["세대", "공존", "보호", "자연", "교육"];
+            let correctCount = 0;
+            let incompleteFlag = false;
+
+            slots.forEach(id => {
+                const slot = document.getElementById(`s6-slot-${id}`);
+                if (!slot.dataset.placedText) {
+                    incompleteFlag = true;
+                }
+                // 배치된 글자가 정답 슬롯의 고유 정답값(id)과 일치해야 정답!
+                if (slot.dataset.placedText === id) {
+                    correctCount++;
+                    slot.className = "inline-flex bg-green-100 border-2 border-green-500 text-green-900 px-3 py-1 mx-1 rounded-lg text-xs font-black min-w-[75px] justify-center items-center h-7 shadow-sm transition-all";
+                } else if (slot.dataset.placedText) {
+                    slot.className = "inline-flex bg-red-100 border-2 border-red-500 text-red-900 px-3 py-1 mx-1 rounded-lg text-xs font-black min-w-[75px] justify-center items-center h-7 shadow-sm transition-all";
+                }
+            });
+
+            const toast = document.getElementById('stat-feedback');
+            if (toast) {
+                toast.innerHTML = `<div class='bg-white px-6 py-3 rounded-2xl border-2 border-indigo-500 text-indigo-600 font-black shadow-2xl text-xl'>📊 문장 매칭: ${correctCount} / 5</div>`;
+                toast.classList.remove('pop-up');
+                void toast.offsetWidth;
+                toast.classList.add('pop-up');
+            }
+
+            if (correctCount === 5) {
+                alert("🎉 완벽합니다! 6학년 도덕 단원에 명시된 '지속가능한 삶의 진정한 의미'와 '실천 노력' 가치 텍스트를 한치의 오차도 없이 완벽하게 복원해 주셨습니다!");
+            } else {
+                let alertMsg = `⚠️ 문맥에 맞지 않는 낱말은 빨간색 괄호 상자로 표시됩니다. 빈칸을 클릭하면 주머니로 회수해 재시도할 수 있어요! (${correctCount}개 맞춤)`;
+                if (incompleteFlag) alertMsg += "\n💡 아직 채워지지 않은 빈칸 괄호가 남아있으니 모두 완성해 보세요!";
+                alert(alertMsg);
+            }
+        }
+
+        // 🚩 6학년 페이지 전환 실시간 무력화 우회 가동 트리거 컨디션 설치
+        setInterval(() => {
+            const activePage = document.getElementById('page-study6-match');
+            if (activePage && activePage.classList.contains('active')) {
+                const pool = document.getElementById('s6-card-pool');
+                if (pool && pool.children.length === 0 && !currentS6SelectedCard) {
+                    initS6Game();
+                }
+            }
+        }, 300);
+    </script>
+    <div id="page-quiz-home" class="page">
+        <h2 class="font-black text-3xl text-green-700 text-center mb-8">어떤 퀴즈를 풀까요?</h2>
+        <div class="space-y-4">
+
+            <button onclick="navigateTo('quiz-recycle')" class="sub-btn"><span>📝 분리배출 퀴즈</span><span>▶</span></button>
+            <button onclick="startVirtueQuiz()" class="sub-btn"><span>✨ 덕목 분리배출 퀴즈</span><span>▶</span></button>
+        </div>
+        <div class="bottom-action-area"><button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button></div>
+    </div>
+
+    <!-- ==========================================================
+         🎭 [분리 완료] 도덕 딜레마 극장 (학년별 상영관 에디션)
+         ========================================================== -->
+    <div id="page-theater" class="page">
+        <div class="max-w-md mx-auto">
+
+            <!-- 🎬 [인트로] 상영관 선택 화면 -->
+            <div id="theater-intro" class="text-center py-10">
+                <div class="mb-6"><span class="text-8xl">🎭</span></div>
+                <h1 class="text-3xl font-black text-slate-800 mb-2">도덕 딜레마 극장</h1>
+                <p class="text-xs font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block mb-4">당신의 진짜 선택을 확인해요</p>
+                <p class="text-slate-500 mb-8 font-medium text-sm leading-relaxed break-keep">
+                    일상의 작은 실천부터 지구촌 거대 담론까지!<br>나의 마음에 맞는 상영관을 고르고 테스트를 시작해 보세요.
+                </p>
+
+                <!-- 👉 학년군별 선택 버튼 스플리터 -->
+                <div class="space-y-4">
+                    <button onclick="startTheater('basic')" class="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white font-black py-4 rounded-2xl text-lg shadow-md hover:scale-[1.01] transition-all flex items-center justify-center space-x-3">
+                        <span>📝 4~5학년 일상 실천 상영관 (10문항)</span>
+                    </button>
+                    <button onclick="startTheater('sustain')" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black py-4 rounded-2xl text-lg shadow-md hover:scale-[1.01] transition-all flex items-center justify-center space-x-3">
+                        <span>🤝 6학년 지구촌 지속가능 상영관 (7문항)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 🎮 [본 게임] 상황 런타임 보드 -->
+            <div id="theater-game" class="hidden">
+                <div class="bg-white rounded-[35px] p-8 shadow-2xl border border-slate-100">
+                    <div class="flex justify-between items-center mb-8">
+                        <span id="step-counter" class="text-sm font-black text-blue-600 bg-blue-50 px-4 py-1.5 rounded-full">상황 1/10</span>
+                        <span id="category-badge" class="text-[11px] font-bold text-slate-400 border border-slate-200 px-2 py-1 rounded-md uppercase tracking-tighter">CATEGORY</span>
+                    </div>
+                    <div class="min-h-[140px] mb-10 flex items-center">
+                        <h2 id="scenario-text" class="text-lg font-black text-slate-800 leading-snug break-keep">상황 로딩 중...</h2>
+                    </div>
+                    <div id="choice-container" class="space-y-4"></div>
+                </div>
+            </div>
+
+            <!-- 📊 [결과창] 분석 보고서 보드 -->
+            <div id="theater-result" class="hidden">
+                <h2 class="text-2xl font-black text-center mb-8 text-slate-800">📊 나의 도덕 성향 결과</h2>
+                <div class="bg-white rounded-[35px] p-6 shadow-xl mb-6 border border-slate-50">
+                    <div style="position: relative; height: 320px; width: 100%;"><canvas id="radarChart"></canvas></div>
+                </div>
+                <div class="bg-slate-800 rounded-[30px] p-7 shadow-xl mb-8 text-white text-center">
+                    <div class="flex justify-between items-end mb-4">
+                        <span class="text-sm font-bold opacity-80">나의 편의성 지수</span>
+                        <span id="conv-text" class="text-3xl font-black text-yellow-400">0%</span>
+                    </div>
+                    <div class="h-6 bg-slate-700 rounded-full overflow-hidden p-1 mb-5">
+                        <div id="conv-bar" class="h-full bg-gradient-to-r from-yellow-300 to-yellow-500 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                    <p id="feedback-msg" class="text-sm leading-relaxed text-slate-300 italic break-keep"></p>
+                </div>
+                <button onclick="document.getElementById('theater-result').classList.add('hidden'); document.getElementById('theater-intro').classList.remove('hidden');" class="w-full bg-slate-200 text-slate-700 font-bold py-4 rounded-2xl hover:bg-slate-300">
+                    다른 상영관 체험하기
+                </button>
+            </div>
+
+        </div>
+
+        <div class="bottom-action-area" style="max-width:700px; margin: 20px auto; padding: 0 20px;">
+            <button onclick="goHome()" class="back-btn-large">← 뒤로 가기</button>
+        </div>
+    </div>
+
+    <div id="stat-feedback" style="position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 9999; font-size: 2rem; font-weight: 900; opacity: 0; text-shadow: 2px 2px 10px rgba(0,0,0,0.2);"></div>
+
+    <div id="page-quiz-recycle" class="page">
+        <div id="game-wrapper">
+            <div id="start-screen" class="overlay">
+                <h1 class="text-3xl font-bold text-green-700 mb-4">🌳 자연愛Green 🌳</h1>
+                <p class="mb-8 text-gray-600">지구를 지키는 20가지 분리배출 미션!<br>우유팩은 어디에 버려야 할까요? 지금 확인해보세요.</p>
+                <button class="bg-green-700 text-white px-10 py-4 rounded-full text-xl font-bold shadow-lg hover:scale-105 transition" onclick="startGame()">분리배출 시작!</button>
+            </div>
+
+            <div id="end-screen" class="overlay hidden">
+                <h1 class="text-2xl font-bold text-green-700 mb-4">🌳 위대한 숲의 수호자! 🌳</h1>
+                <p id="final-stats" class="bg-green-50 p-6 rounded-2xl text-left text-sm leading-relaxed mb-6 w-full"></p>
+                <button onclick="resetRecycleQuiz()" class="bg-green-700 text-white px-8 py-3 rounded-full font-bold">다시 도전하기</button>
+            </div>
+
+            <div class="status-bar">
+                <span>🏆 스코어: <span id="score">0</span> / 20</span>
+                <span>미션 <span id="q-count">0</span> / 20</span>
+            </div>
+            <div id="village-container">
+                <div id="village-display">🌰</div>
+                <div id="growth-stage">씨앗 단계</div>
+            </div>
+            <div id="praise-msg" class="text-orange-600 font-bold mb-4 h-6 text-sm">함께 지구를 지켜보자!</div>
+            <div id="question-box">문제를 불러오는 중...</div>
+            <div id="options-box" class="options"></div>
+            <div id="virtue-counter"></div>
+
+        </div>
+
+        <div class="bottom-action-area" id="quiz-back-area" style="max-width:700px; margin: 20px auto; padding: 0 20px;">
+            <button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button>
+        </div>
+
+    </div>
+
+    <script>
+
+        const allQuizData = [
+            { q: "우유팩(종이팩)은 어떻게 버려야 올바를까요?", a: 2, options: ["일반 폐지와 함께 버린다", "내용물을 비우고 헹궈서 종이팩 전용함에 버린다", "비닐류에 섞어서 버린다", "그냥 종량제 봉투에 버린다"], virtue: "인내" },
+            { q: "종이상자를 버릴 때 실천할 수 있는 성실한 방법은 무엇일까요?", a: 2, options: ["귀찮으니 그냥 버린다", "테이프를 떼고 납작하게 접어서 배출한다", "비닐에 싸서 한꺼번에 버린다", "젖은 종이도 같이 버린다"], virtue: "성실" },
+            { q: "종이류의 책임감 있는 분리배출 방법이 아닌 것은?", a: 3, options: ["신문지를 차곡차곡 모은다", "박스의 테이프를 제거한다", "코팅지를 종이에 같이 버린다", "책의 플라스틱 표지를 분리한다"], virtue: "책임" },
+            { q: "택배 박스의 송장을 처리하는 배려 있는 행동은?", a: 2, options: ["송장을 그냥 둔 채 버린다", "송장을 깨끗이 떼어내고 버린다", "송장 위에 매직으로 덧칠만 한다", "박스 안쪽에 송장을 숨긴다"], virtue: "배려" },
+            { q: "지구를 아끼는 마음의 절제 있는 습관은?", a: 2, options: ["편리한 일회용품을 많이 쓴다", "나만의 장바구니와 텀블러를 사용한다", "쓰레기를 한 봉투에 다 몰아 넣는다", "길가에 쓰레기를 버린다"], virtue: "절제" },
+            { q: "우리 마을의 환경을 지키려고 하는 정의로운 습관은?", a: 1, options: ["정해진 종류별로 분리배출한다", "쓰레기차가 알아서 골라주길 기다린다", "재활용품을 종량제 봉투에 몰래 넣는다", "냄새나는 것만 따로 골라 버린다"], virtue: "정의" },
+            { q: "바다 동물을 보호하기 위해 생명 존중의 올바른 행동은?", a: 1, options: ["라벨을 뗀 투명 페트병만 모아 배출한다", "깨진 거울과 함께 섞어 버린다", "조개껍데기를 안에 넣어 버린다", "사용한 휴지와 함께 담는다"], virtue: "생명 존중" },
+            { q: "환경 보호의 중요성을 깨닫고 고통받는 지구의 마음을 느끼는 공감 어린 행동은?", a: 4, options: ["쓰레기를 더 많이 만들기", "자원을 마구 낭비하기", "환경 보호 뉴스 외면하기", "자원을 아끼고 분리배출을 생활화하기"], virtue: "공감" },
+            { q: "깨끗한 환경을 만들기 위해 협력하는 올바른 모습은?", a: 1, options: ["분리배출 규칙을 이웃과 함께 잘 지킨다", "우리 집 쓰레기를 이웃집 앞에 둔다", "수거함 주변을 엉망으로 만든다", "나 혼자만 편하게 버린다"], virtue: "협력" },
+            { q: "지구라는 커다란 공동체를 위해 우리가 다 같이 지켜야 할 의식은?", a: 4, options: ["나 하나쯤은 괜찮다는 생각", "남이 버린 쓰레기 비웃기", "아무 곳에나 쓰레기 투기하기", "자원 순환 활동에 즐겁게 참여하기"], virtue: "공동체 의식" },
+            { q: "플라스틱 용기를 분리배출하는 성실한 모습은?", a: 4, options: ["그냥 버리기", "물만 살짝 뿌리기", "뚜껑만 닫기", "내용물을 비우고 깨끗이 헹구기"], virtue: "성실" },
+            { q: "비닐류를 배출할 때 수거 공정을 배려하여 올바르게 내놓는 행동은?", a: 2, options: ["딱지처럼 꽉 접어 버린다", "이물질 없이 잘 펼쳐서 비닐류에 넣는다", "종이와 묶어서 버린다", "음식물을 담아 배출한다"], virtue: "배려" },
+            { q: "캔을 수거하는 환경미화원의 수고를 덜어드리는 배려적인 행동은?", a: 1, options: ["캔을 납작하게 찌그러뜨려 배출한다", "캔 속에 쓰레기를 채운다", "캔을 그냥 통째로 던진다", "무겁게 만들어 버린다"], virtue: "배려" },
+            { q: "누군가 다치지 않게 깨진 유리를 처리하는 배려 있는 행동은?", a: 3, options: ["수거함에 그대로 던진다", "플라스틱함에 몰래 버린다", "신문지에 싸서 위험 표시를 해 버린다", "싱크대에 버린다"], virtue: "배려" },
+            { q: "조개껍데기나 뼈를 버리는 정의로운 판단은?", a: 3, options: ["음식물 쓰레기통에 넣는다", "플라스틱류로 분류한다", "일반쓰레기 종량제 봉투에 버린다", "유리병류에 넣는다"], virtue: "정의" },
+            { q: "다 쓴 건전지 처리를 끝까지 책임지는 방법은?", a: 1, options: ["전용 폐건전지 수거함에 넣는다", "일반 쓰레기 봉투에 버린다", "플라스틱 수거함에 넣는다", "비닐류에 섞어 버린다"], virtue: "책임" },
+            { q: "수질 오염을 막고 생명을 아끼는 마음으로 폐의약품을 버리는 방법은?", a: 2, options: ["하수구에 흘려보낸다", "약국이나 보건소 수거함에 반납한다", "음식물 쓰레기와 섞는다", "종량제 봉투에 그냥 넣는다"], virtue: "배려" },
+            { q: "형광등이 깨져 유해물질이 나오지 않게 관리하는 책임감 있는 모습은?", a: 4, options: ["잘게 깨뜨린다", "비닐봉지에만 담는다", "일반 쓰레기로 버린다", "깨지지 않게 전용 수거함에 넣는다"], virtue: "책임" },
+            { q: "쓰레기를 줄이기 위한 절제의 태도는?", a: 1, options: ["필요한 것만 적어서 산다", "눈에 보이는 대로 다 산다", "가장 큰 용량만 산다", "사은품을 받으려 더 산다"], virtue: "절제" },
+            { q: "거울이나 도자기를 정해진 규칙대로 버리는 정의로움은?", a: 2, options: ["유리병 수거함에 넣기", "불연성 마대나 종량제 봉투에 버리기", "종이상자에 숨기기", "플라스틱함에 넣기"], virtue: "정의" }
+        ];
+
+        let quizList = [];
+        let currentIdx = 0;
+        let score = 0;
+        let isRetry = false;
+        let virtueCounts = { "정의": 0, "생명 존중": 0, "공동체 의식": 0, "배려": 0, "협력": 0, "공감": 0, "책임": 0, "절제": 0, "성실": 0, "인내": 0 };
+
+        function startGame() {
+            quizList = allQuizData.sort(() => Math.random() - 0.5).slice(0, 20);
+            currentIdx = 0; score = 0;
+            initVirtueUI();
+            document.getElementById('start-screen').classList.add('hidden');
+            loadQuiz();
+        }
+
+        // 🚩 분리배출 퀴즈 초기화 함수 (덕목 퀴즈 방식과 동일하게 수정)
+        function resetRecycleQuiz() {
+            // 1. 종료 화면 숨기기
+            document.getElementById('end-screen').classList.add('hidden');
+            // 2. 시작 화면(인트로) 다시 보여주기
+            document.getElementById('start-screen').classList.remove('hidden');
+
+            // 3. 기존 데이터 초기화
+            score = 0;
+            currentIdx = 0;
+            document.getElementById('score').innerText = "0";
+            document.getElementById('q-count').innerText = "0";
+
+            // 4. 마을 상태도 처음으로 되돌리기
+            updateVillage();
+        }
+
+        function initVirtueUI() {
+            const container = document.getElementById('virtue-counter');
+            container.innerHTML = "";
+            Object.keys(virtueCounts).forEach(v => {
+                const div = document.createElement('div');
+                div.className = 'virtue-item';
+                div.id = `v-${v}`;
+                // 🚩 이름을 "정의: 0" 형태로 처음부터 표시합니다.
+                div.innerText = `${v}: 0`;
+                container.appendChild(div);
+            });
+        }
+        function loadQuiz() {
+            const qBox = document.getElementById('question-box');
+            const q = quizList[currentIdx];
+            document.getElementById('q-count').innerText = currentIdx + 1;
+
+            qBox.style.opacity = 0;
+            qBox.style.transform = "translateY(10px)";
+            setTimeout(() => {
+                qBox.innerText = q.q;
+                qBox.style.opacity = 1;
+                qBox.style.transform = "translateY(0)";
+            }, 200);
+
+
+            const oBox = document.getElementById('options-box');
+            oBox.innerHTML = "";
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(i + 1);
+                oBox.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(choiceIdx) {
+            const q = quizList[currentIdx];
+            const qBox = document.getElementById('question-box');
+
+            if (choiceIdx === q.a) {
+                if (!isRetry) score++;
+                virtueCounts[q.virtue]++;
+                updateVirtueUI(q.virtue);
+                showPlantingAnimation(q.virtue);
+                updateVillage();
+                qBox.innerText = `✅ 정답! [${q.virtue}]의 마음이 자라납니다.`;
+                qBox.style.borderColor = "#4caf50";
+                qBox.style.backgroundColor = "#f1f8e9";
+                setTimeout(nextQuiz, 1200);
+            } else {
+                qBox.innerText = "❌ 다시 한번 생각해보세요! 지구가 기다리고 있어요.";
+                qBox.style.borderColor = "#ff5722";
+                qBox.style.backgroundColor = "#fff5f2";
+                isRetry = true;
+                showRetryButton();
+            }
+            document.getElementById('score').innerText = score;
+        }
+
+        function showRetryButton() {
+            const oBox = document.getElementById('options-box');
+            oBox.innerHTML = `<button class="retry-btn" onclick="loadQuiz()">다시 신중하게 골라보기</button>`;
+        }
+
+        function showPlantingAnimation(vName) {
+            const container = document.getElementById('village-container');
+            const seed = document.createElement('div');
+            seed.className = 'virtue-seed';
+            seed.innerText = `${vName} 🌱`;
+            seed.style.left = (Math.random() * 60 + 20) + "%";
+            container.appendChild(seed);
+
+            setTimeout(() => {
+                const can = document.createElement('div');
+                can.className = 'water-can';
+                can.innerText = `🚿`;
+                can.style.left = seed.style.left;
+                container.appendChild(can);
+                setTimeout(() => can.remove(), 1200);
+            }, 500);
+
+            setTimeout(() => seed.remove(), 1000);
+        }
+
+        function nextQuiz() {
+            currentIdx++;
+            isRetry = false;
+            if (currentIdx < quizList.length) loadQuiz();
+            else showEndScreen();
+        }
+
+        function updateVirtueUI(v) {
+            const el = document.getElementById(`v-${v}`);
+            if (el) {
+                // 🚩 바뀐 숫자(virtueCounts[v])를 화면에 다시 씁니다.
+                el.innerText = `${v}: ${virtueCounts[v]}`;
+                el.classList.add('v-active');
+            }
+        }
+        function updateVillage() {
+            const display = document.getElementById('village-display');
+            const stage = document.getElementById('growth-stage');
+            let icon = "🌰", text = "";
+
+            if (score <= 3) { icon = "🌰"; text = "씨앗 단계"; }
+            else if (score <= 7) { icon = "🌱"; text = "새싹 단계"; }
+            else if (score <= 12) { icon = "🌿"; text = "묘목 단계"; }
+            else if (score <= 17) { icon = "🌳"; text = "나무 단계"; }
+            else { icon = "🏞️🌳✨"; text = "풍성한 숲 단계"; }
+
+            display.innerText = icon;
+            stage.innerText = text;
+        }
+
+        function showEndScreen() {
+            document.getElementById('end-screen').classList.remove('hidden');
+            let summary = `오늘의 점수: ${score}점 / 20점\n\n[수확한 덕목]\n`;
+            Object.entries(virtueCounts).forEach(([k, v]) => { if (v > 0) summary += `• ${k} (${v}회) `; });
+            document.getElementById('final-stats').innerText = summary + "\n\n작은 실천이 모여 거대한 숲을 만들었습니다!";
+        }
+        /* ==========================================
+🌍 6학년 지속가능 퀴즈 데이터 및 로직
+========================================== */
+        const SUSTAIN_VIRTUES = ["미래 세대와의 공존", "세대 간 정의", "미래 세대에 대한 책임", "생태적 성찰", "지구적 연대", "생태적 지속가능성", "공공선 추구", "자발적 절제", "기후 정의", "생명 가치 존중"];
+
+        // 20개의 6학년 맞춤형 딜레마 & 지식 퀴즈 (랜덤으로 10개만 출제)
+        const allSustainQuizData = [
+            { v: "미래 세대와의 공존", q: "우리가 한 번도 만난 적 없는 미래의 아이들을 위해, 깨끗한 지구 환경을 물려주려는 도덕적 마음은 무엇일까요?", opts: ["나 혼자만 잘 살기", "미래 세대와의 공존", "과거 세대 탓하기", "편리함만 추구하기"], ans: 1 },
+            { v: "세대 간 정의", q: "현재 우리가 자원을 마구 낭비하면 미래 후손들이 쓸 자원이 부족해집니다. 이를 막기 위해 공평하게 자원을 나누려는 태도는?", opts: ["세대 간 정의", "나만 먼저 쓰기", "소비 늘리기", "돈 많이 벌기"], ans: 0 },
+            { v: "미래 세대에 대한 책임", q: "건강한 지구를 다음 세대에게 안전하게 넘겨주어야 할 우리 세대의 도덕적 의무는 무엇일까요?", opts: ["기술에만 의존하기", "미래 세대에 대한 책임", "자연 파괴 방관하기", "모른 척 피하기"], ans: 1 },
+            { v: "생태적 성찰", q: "편리한 스마트폰을 쓸 때도 컴퓨터 데이터 센터에서 엄청난 탄소가 나온다는 사실을 알고, 스스로 나의 일상을 돌아보는 마음은?", opts: ["기술 만능주의", "생태적 성찰", "무조건적인 소비", "편리함 즐기기"], ans: 1 },
+            { v: "지구적 연대", q: "지구 온난화로 바닷물이 차올라 교실이 잠기는 이웃 나라 친구들의 아픔을 남의 일로 여기지 않고 세계가 함께 협력하는 자세는?", opts: ["지구적 연대", "우리 나라만 챙기기", "모른 척 지켜보기", "경쟁에서 이기기"], ans: 0 },
+            { v: "생태적 지속가능성", q: "돈을 버는 개발보다 자연의 한계를 먼저 생각하고, 자연의 순환에 맞춰 조화롭게 살아가려는 방향을 무엇이라고 할까요?", opts: ["일회용품 많이 쓰기", "생태적 지속가능성", "공장 무조건 짓기", "자연 정복하기"], ans: 1 },
+            { v: "공공선 추구", q: "모두가 함께 쓰는 깨끗한 공기와 물을 지키기 위해, 가까운 거리는 걸어 다니며 매연을 줄이는 도덕적 실천은?", opts: ["공공선 추구", "개인 이익 챙기기", "편리함만 누리기", "나 혼자 차 타기"], ans: 0 },
+            { v: "자발적 절제", q: "법으로 강제하지 않아도, 텀블러를 스스로 챙겨 다니며 일회용 컵 사용을 줄이는 성숙한 환경 실천 행동은?", opts: ["유행 따라 소비하기", "귀찮아하며 포기하기", "자녀에게 미루기", "자발적 절제"], ans: 3 },
+            { v: "기후 정의", q: "온실가스를 거의 뿜지 않는 가난한 나라의 아이들이 기후 변화로 더 큰 폭염 피해를 입는 불평등을 해결하려는 도덕적 마음은?", opts: ["공장 더 짓기", "기후 정의", "나 몰라라 하기", "피해 지역 비웃기"], ans: 1 },
+            { v: "생명 가치 존중", q: "인간의 욕심뿐만 아니라, 기후 위기로 지구상에서 사라질 위기에 처한 꿀벌과 모든 동식물의 생명 권리를 소중히 인정하는 마음은?", opts: ["생명 가치 존중", "인간 중심주의", "자연 지배하기", "약육강식 따르기"], ans: 0 },
+            { v: "미래 세대와의 공존", q: "미래 어린이들이 마실 깨끗한 식수를 지켜주기 위해, 오늘 내가 일회용 플라스틱 페트병 소비를 줄이는 실천 방법은?", opts: ["미래 세대와의 공존", "현재의 편리 추구", "개인의 자유 만끽", "자원 마구 쓰기"], ans: 0 },
+            { v: "세대 간 정의", q: "양치할 때 양치컵을 사용해 물을 아껴 씀으로써, 다음 세대가 쓸 깨끗한 수자원을 분배하려는 실천과 연결되는 가치는?", opts: ["낭비 지상주의", "경제 성장 최우선", "세대 간 정의", "과거 방식 고집"], ans: 2 },
+            { v: "미래 세대에 대한 책임", q: "택배 상자의 송장 스티커와 비닐 테이프를 끈기 있게 다 떼어내어 완벽한 자원 순환을 책임지는 태도는 어떤 덕목일까요?", opts: ["미래 세대에 대한 책임", "회피와 변명", "방관과 무시", "귀찮음 따르기"], ans: 0 },
+            { v: "생태적 성찰", q: "내가 버린 비닐 쓰레기가 바다거북의 생명을 위협할 수 있음을 꼬리를 물고 고민하며 '나의 행동'을 스스로 반성하는 태도는?", opts: ["합리화 하기", "생태적 성찰", "남 탓으로 돌리기", "귀찮아 하기"], ans: 1 },
+            { v: "지구적 연대", q: "이상 기후로 가뭄과 굶주림에 처한 지구 반대편 이웃 나라의 환경 문제를 나의 일처럼 아파하고 기부나 실천에 동참하는 마음은?", opts: ["지구적 연대", "내 일 아니면 무시", "우리 동네만 챙기기", "경쟁심 불태우기"], ans: 0 },
+            { v: "생태적 지속가능성", q: "물건을 살 때 당장의 화려함보다 친환경 포장이 되어 있어 자연 속에서 잘 분해되는 제품을 고르는 성숙한 소비 방법은?", opts: ["생태적 지속가능성", "일회용 과소비", "비용만 아끼기", "유행 무조건 따르기"], ans: 0 },
+            { v: "공공선 추구", q: "우리 반 교실의 불필요한 전등을 스스로 끄고, 이면지를 아껴 써서 공공의 자원과 지구를 함께 지키려는 가치는?", opts: ["공공선 추구", "개인 편의주의", "나만 편하기", "속도 중심 경쟁"], ans: 0 },
+            { v: "자발적 절제", q: "새 물건을 사고 싶지만, 아직 쓸 만한 학용품이 필통에 남아 있어 내 안의 욕심을 꾹 가라앉히는 실천 행동은?", opts: ["자발적 절제", "무조건 사기", "친구 물건 부러워하기", "스트레스 소비"], ans: 0 },
+            { v: "기후 정의", q: "기후 난민들의 아픔을 덜어주기 위해, 온실가스를 많이 배출하는 우리 사회가 먼저 탄소 배출을 줄여나가야 한다는 도덕적 마음은?", opts: ["차별의 심화", "기후 정의", "모른 척 방관", "개발 중심 사고"], ans: 1 },
+            { v: "생명 가치 존중", q: "대형 산불로 서식지를 잃어가는 야생 동물들의 고통 어린 뉴스 화면에 공감하며, 환경 보호를 다짐하는 마음은?", opts: ["인간 우월주의", "자연 정복관", "생명 가치 존중", "방치와 외면"], ans: 2 }
+        ];
+
+        let sustainCurrentIdx = 0;
+        let sustainCorrectCount = 0;
+        let sustainSelectedQuiz = [];
+        let sustainStats = {};
+
+        function startSustainQuiz() {
+            // 기존 퀴즈 중단 방지 확인 (isQuizRunning 대응용)
+            if (isQuizRunning() && !confirm("페이지를 벗어나면 퀴즈가 초기화됩니다. 이동하시겠습니까?")) return;
+
+            document.getElementById('sustain-intro').classList.remove('hidden');
+            document.getElementById('sustain-game').classList.add('hidden');
+            document.getElementById('sustain-result').classList.add('hidden');
+            document.getElementById('sustain-back-box').classList.remove('hidden');
+
+            // 🚩 isQuizRunning() 에 6학년 퀴즈도 인식시키기 위해 페이지 강제 푸시
+            navigateTo('quiz-sustain');
+        }
+
+        // 🎮 6학년 지속가능 퀴즈 게임판 가동 및 초기화 함수 (다시하기 완벽 대응)
+        function startSustainGame() {
+            document.getElementById('sustain-intro').classList.add('hidden');
+            document.getElementById('sustain-back-box').classList.add('hidden');
+            document.getElementById('sustain-game').classList.remove('hidden');
+
+            // 다시 도전하기로 진입했을 때 리셋 버튼 숨기기
+            if (document.getElementById('sustain-retry-btn')) {
+                document.getElementById('sustain-retry-btn').classList.add('hidden');
+            }
+
+            // 덕목 점수 초기화
+            SUSTAIN_VIRTUES.forEach(v => sustainStats[v] = 0);
+
+            // 문제 셔플링 및 카운터 초기화
+            sustainSelectedQuiz = [...allSustainQuizData].sort(() => Math.random() - 0.5).slice(0, 10);
+            sustainCurrentIdx = 0;
+            sustainCorrectCount = 0;
+
+            // 🚩 [기믹 리셋] 다리 게이지를 비우고 순수 파란색으로 초기화
+            const bridge = document.getElementById('bridge-fill');
+            if (bridge) {
+                if (sustainCorrectCount === 10) {
+                    bridge.style.left = "0%";
+                    bridge.style.width = "100%";
+                    bridge.style.background = "linear-gradient(to right, #3b82f6 45%, #22c55e 50%, #eab308 55%)";
+                } else {
+                    // 💡 양방향 대칭 보정: 파란색은 왼쪽에서 채워지고, 노란색은 오른쪽에서 고정되어 뻗어나오는 투 트랙 구조 연산
+                    let fillWidth = sustainCorrectCount * 5; // 한쪽당 최대 45%~50%까지 이동
+                    bridge.style.left = "0%";
+                    bridge.style.width = "100%";
+                    bridge.style.background = `linear-gradient(to right, #3b82f6 ${fillWidth}%, #f3f4f6 ${fillWidth}%, #f3f4f6 ${100 - fillWidth}%, #eab308 ${100 - fillWidth}%)`;
+                }
+            }
+
+            // 아바타 양 끝 위치로 강제 리셋
+            document.getElementById('avatar-current').style.left = "5%";
+            document.getElementById('avatar-future').style.right = "5%";
+            document.getElementById('sustain-score').innerText = "0";
+
+            loadSustainQuiz();
+        }
+
+        function loadSustainQuiz() {
+            if (sustainCurrentIdx >= 10) { showSustainResult(); return; }
+
+            const data = sustainSelectedQuiz[sustainCurrentIdx];
+            document.getElementById('sustain-count').innerText = `${sustainCurrentIdx + 1}`;
+            document.getElementById('sustain-badge').innerText = data.v;
+            document.getElementById('sustain-question').innerText = data.q;
+
+            const optBox = document.getElementById('sustain-options');
+            optBox.innerHTML = "";
+            data.opts.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full bg-white border-2 border-indigo-100 p-4 rounded-xl text-left font-bold text-slate-700 hover:border-indigo-500 hover:bg-indigo-50 transition-all shadow-sm";
+                btn.innerText = opt;
+                btn.onclick = () => checkSustainAnswer(i);
+                optBox.appendChild(btn);
+            });
+        }
+
+        // 🏆 양방향 색상 융합 무빙 핵심 연산 엔진
+        function checkSustainAnswer(idx) {
+            const data = sustainSelectedQuiz[sustainCurrentIdx];
+            const toast = document.getElementById('stat-feedback');
+            const bridge = document.getElementById('bridge-fill');
+
+            if (idx === data.ans) {
+                sustainStats[data.v]++;
+                sustainCorrectCount++;
+
+                // 🚩 아바타 무빙 보정: 좌우 끝(5%)에서 출발하여 10문항 정답 시 딱 50% 중앙에서 포옹
+                let movePercent = 5 + (sustainCorrectCount * 4.5);
+
+                // 🚩 양방향 게이지 융합 기믹 해결!
+                // 좌우 대칭으로 차오르는 그라데이션 구현 (현재세대의 파랑, 미래세대의 노랑)
+                let progressPercent = sustainCorrectCount * 5; // 한쪽당 5%씩 채움 (양쪽 합 10%)
+
+                if (bridge) {
+                    if (sustainCorrectCount === 10) {
+                        // 🎉 만점 달성 시 정중앙에서 파랑과 노랑이 융합되어 완벽한 초록색 장관 연출!
+                        bridge.style.left = "0%";
+                        bridge.style.width = "100%";
+                        bridge.style.background = "linear-gradient(to right, #3b82f6 40%, #22c55e 50%, #eab308 60%)";
+                    } else {
+                        // 💡 해결책: 왼쪽 끝(0%)에서 파란색이 나오고, 오른쪽 끝(100%)에서 노란색이 좁혀져 들어오는 대칭 구조 설계!
+                        bridge.style.left = "0%";
+                        bridge.style.width = "100%";
+                        bridge.style.background = `linear-gradient(to right, #3b82f6 ${progressPercent}%, #cbd5e1 ${progressPercent}%, #cbd5e1 ${100 - progressPercent}%, #eab308 ${100 - progressPercent}%)`;
+                    }
+                }
+
+                // 아바타 실실간 좌우 대칭 무빙 슬라이딩
+                document.getElementById('avatar-current').style.left = movePercent + "%";
+                document.getElementById('avatar-future').style.right = movePercent + "%";
+                document.getElementById('sustain-score').innerText = sustainCorrectCount;
+
+                if (toast) {
+                    toast.innerHTML = `<span class='text-indigo-600 font-black'>✨ ${data.v} 획득!</span>`;
+                    toast.classList.remove('pop-up');
+                    void toast.offsetWidth; // 애니메이션 트리거 매직
+                    toast.classList.add('pop-up');
+                }
+
+                setTimeout(() => { sustainCurrentIdx++; loadSustainQuiz(); }, 1200);
+            } else {
+                if (toast) {
+                    toast.innerHTML = `<span class='text-red-500 font-black'>❌ 조금 더 성찰해보세요</span>`;
+                    toast.classList.remove('pop-up');
+                    void toast.offsetWidth;
+                    toast.classList.add('pop-up');
+                }
+            }
+        }
+
+        // 🏁 결과창 처리 및 [다시 도전하기] 버튼 실시간 스크립트 결합 기믹
+        function showSustainResult() {
+            document.getElementById('sustain-game').classList.add('hidden');
+            document.getElementById('sustain-result').classList.remove('hidden');
+
+            let report = "";
+            let hasScore = false;
+            for (const [key, val] of Object.entries(sustainStats)) {
+                if (val > 0) {
+                    report += `🌿 <b>[${key}]</b>의 가치를 가슴에 품었습니다.<br>`;
+                    hasScore = true;
+                }
+            }
+            document.getElementById('sustain-report').innerHTML = hasScore ? report : "아직 두 세대가 만나기엔 우리의 노력이 더 필요해요!";
+
+            // 🚩 HTML 본문을 건드리지 않고 결과창 하단에 [🔄 다시 도전하기] 버튼을 자동 동적 생성 주입하는 설계
+            const resultDiv = document.getElementById('sustain-result');
+            let retryBtn = document.getElementById('sustain-retry-btn');
+            if (!retryBtn) {
+                retryBtn = document.createElement('button');
+                retryBtn.id = 'sustain-retry-btn';
+                retryBtn.className = "w-full py-4 bg-orange-500 text-white rounded-2xl font-black text-xl shadow-lg mt-3 hover:bg-orange-600 transition-all";
+                retryBtn.innerText = "🔄 지속가능 퀴즈 다시 도전하기";
+                retryBtn.onclick = () => {
+                    document.getElementById('sustain-result').classList.add('hidden');
+                    startSustainGame();
+                };
+                // 홈으로 돌아가기 버튼 바로 윗자리에 안착시킴
+                resultDiv.insertBefore(retryBtn, resultDiv.lastElementChild);
+            } else {
+                retryBtn.classList.remove('hidden');
+            }
+        }
+
+        // 🔒 이탈 방지 내장 안전 가드 시스템
+        function isQuizRunning() {
+            const currentPage = historyStack[historyStack.length - 1];
+            return currentPage === 'quiz-recycle' ||
+                (currentPage === 'quiz-virtue' && document.getElementById('virtue-intro').classList.contains('hidden')) ||
+                (currentPage === 'quiz-sustain' && document.getElementById('sustain-intro').classList.contains('hidden'));
+        }
+
+    </script>
+</body>
+</html>
+
+<div id="page-quiz-virtue" class="page">
+    <div id="virtue-intro" class="virtue-card p-10 text-center flex flex-col items-center justify-center space-y-6 bg-gradient-to-br from-green-500 to-green-700 text-white">
+        <div class="text-6xl animate-bounce">🌍</div>
+        <h1 class="text-3xl font-black">자연愛Green<br>지구 수호대</h1>
+        <p class="font-bold">분리배출과 덕목으로 지구를 지켜요!</p>
+        <button onclick="startVirtueGame()" class="w-full py-4 bg-yellow-400 text-green-900 rounded-2xl font-black text-xl shadow-xl">수호대 시작하기!</button>
+    </div>
+
+    <div id="virtue-game" class="hidden">
+        <div class="virtue-card p-3 mb-2 border-2 border-green-200 sticky top-[80px] z-40 bg-white">
+            <div class="grid grid-cols-5 gap-1.5 mb-2" id="stat-container"></div>
+            <div id="top-feedback" class="hidden feedback-pop text-center font-black py-2 rounded-lg text-sm border"></div>
+        </div>
+        <div class="virtue-card p-6 min-h-[450px] flex flex-col shadow-xl">
+            <div class="flex justify-between items-center mb-2">
+                <span id="virtue-badge" class="px-3 py-0.5 rounded-full bg-blue-600 text-white font-black text-[11px]">성실</span>
+                <span id="quiz-count" class="text-xs font-bold text-gray-400">1 / 20</span>
+            </div>
+            <div class="progress-bar mb-6"><div id="step-progress" class="progress-fill" style="width: 5%"></div></div>
+            <h2 id="virtue-question" class="text-lg font-black text-gray-800 leading-snug mb-8"></h2>
+            <div id="virtue-options" class="flex-grow"></div>
+        </div>
+    </div>
+
+    <div id="virtue-result" class="virtue-card p-8 hidden text-center border-4 border-green-500">
+        <div class="text-5xl mb-4">🏆</div>
+        <h2 class="text-2xl font-black text-green-700 mb-2">지구 수호 미션 성공!</h2>
+        <p id="final-score-text" class="font-bold text-gray-600 mb-4"></p>
+        <div id="virtue-report" class="text-left bg-gray-50 p-4 rounded-xl my-4 text-xs leading-loose max-h-60 overflow-y-auto border border-gray-200 font-bold"></div>
+        <button onclick="goHome()" class="w-full py-4 bg-green-600 text-white rounded-2xl font-black text-xl shadow-lg">홈으로 돌아가기</button>
+    </div>
+
+    <div class="bottom-action-area" id="virtue-back-box">
+        <button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button>
+    </div>
+</div>
+<div id="page-quiz-sustain" class="page">
+    <div id="sustain-intro" class="virtue-card p-10 text-center flex flex-col items-center justify-center space-y-6 bg-gradient-to-br from-blue-500 to-indigo-700 text-white rounded-[35px]">
+        <div class="text-6xl animate-pulse">🤝</div>
+        <h1 class="text-3xl font-black">자연愛Green<br>미래 세대 공존 퀴즈</h1>
+        <p class="font-bold leading-relaxed">지구 위기 극복에 대한 올바른 실천으로<br>아직 태어나지 않은 미래 세대와<br>점점 가까워지는 기적을 만들어보세요!</p>
+        <button onclick="startSustainGame()" class="w-full py-4 bg-yellow-400 text-blue-900 rounded-2xl font-black text-xl shadow-xl">공존의 길 걷기!</button>
+    </div>
+
+    <div id="sustain-game" class="hidden">
+        <div class="status-bar mb-4">
+            <span class="text-blue-700">🏆 공존 지수: <span id="sustain-score">0</span> / 10</span>
+            <span class="text-slate-500">여정 <span id="sustain-count">1</span> / 10</span>
+        </div>
+
+        <div style="position: relative; height: 160px; background: linear-gradient(to bottom, #f0f9ff, #e0f2fe); border-radius: 20px; margin-bottom: 20px; border: 2px solid #bae6fd; overflow: hidden; display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 20px;">
+            <div style="position: absolute; bottom: 25px; left: 5%; right: 5%; height: 8px; background: #cbd5e1; border-radius: 10px;">
+                <div id="bridge-fill" style="position: absolute; top: 0; left: 0; height: 100%; background: #3b82f6; border-radius: 10px; width: 0%; transition: width 0.8s ease-in-out;"></div>
+            </div>
+
+            <div id="avatar-current" style="position: absolute; bottom: 25px; left: 5%; transform: translateX(-50%); text-align: center; transition: all 0.8s ease-in-out; z-index: 10;">
+                <div class="avatar-icon" style="font-size: 3.5rem;">🧑‍🤝‍🧑</div>
+                <div style="font-size: 0.75rem; font-weight: 900; background: white; padding: 2px 8px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #1e293b;">현재 세대</div>
+            </div>
+
+            <div id="avatar-future" style="position: absolute; bottom: 25px; right: 5%; transform: translateX(50%); text-align: center; transition: all 0.8s ease-in-out; z-index: 10;">
+                <div class="avatar-icon" style="font-size: 3.5rem;">👶</div>
+                <div style="font-size: 0.75rem; font-weight: 900; background: white; padding: 2px 8px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #1e293b;">미래 세대</div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 min-h-[350px] flex flex-col shadow-xl rounded-[25px] border-2 border-blue-100">
+            <div class="flex justify-between items-center mb-4">
+                <span id="sustain-badge" class="px-3 py-1 rounded-md bg-indigo-100 text-indigo-800 font-black text-[12px]">거대담론 덕목</span>
+            </div>
+            <h2 id="sustain-question" class="text-lg font-black text-gray-800 leading-snug mb-6 break-keep"></h2>
+            <div id="sustain-options" class="flex-grow space-y-3"></div>
+        </div>
+    </div>
+
+    <div id="sustain-result" class="virtue-card p-8 hidden text-center border-4 border-blue-500 bg-white rounded-[35px]">
+        <div class="text-6xl mb-4">🫂</div>
+        <h2 class="text-2xl font-black text-blue-700 mb-4">마침내 두 세대가 만났습니다!</h2>
+        <p class="font-bold text-gray-600 mb-6 leading-relaxed">이와 같은 지속가능한 삶에 대한 당신의 노력과 성찰 덕분에, 우리는 미래 세대와 한 걸음 더 가까워졌습니다.</p>
+        <div id="sustain-report" class="text-left bg-blue-50 p-5 rounded-xl my-4 text-sm leading-loose max-h-60 overflow-y-auto border border-blue-200 font-bold text-slate-700"></div>
+        <button onclick="goHome()" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-xl shadow-lg mt-4">홈으로 돌아가기</button>
+    </div>
+
+    <div class="bottom-action-area" id="sustain-back-box">
+        <button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button>
+    </div>
+</div>
+<div id="page-sub-menu" class="page">
+    <h2 id="sub-menu-title" class="font-black text-3xl text-green-700 text-center mb-8">가이드</h2>
+    <div class="space-y-3">
+        <button onclick="showStepContent('def')" class="sub-btn"><span>🧐 무엇인가요?</span><span>▶</span></button>
+        <button onclick="showStepContent('why')" class="sub-btn"><span>❓ 왜 해야 하나요?</span><span>▶</span></button>
+        <button onclick="showStepContent('how')" class="sub-btn"><span id="btn-label-how">✅ 배출 방법은?</span><span>▶</span></button>
+        <button onclick="showStepContent('tip')" class="sub-btn"><span>💡 헷갈리는 점</span><span>▶</span></button>
+        <button onclick="showStepContent('good')" class="sub-btn"><span>🌍 지구가 좋아해요</span><span>▶</span></button>
+    </div>
+    <div class="bottom-action-area"><button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button></div>
+</div>
+
+<div id="page-detail" class="page">
+    <div class="detail-card">
+        <div id="detail-icon">✨</div>
+        <div id="detail-label">내용 제목</div>
+        <p id="detail-text"></p>
+    </div>
+    <div class="bottom-action-area"><button onclick="goBack()" class="back-btn-large">← 뒤로 가기</button></div>
+</div>
+
+<nav class="fixed-footer-nav">
+    <button onclick="goHome()" class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">홈</span></button>
+    <button onclick="navigateTo('studyhome')" class="nav-item"><span class="nav-icon">📖</span><span class="nav-text">학습터</span></button>
+    <button onclick="navigateTo('practice')" class="nav-item"><span class="nav-icon">🌱</span><span class="nav-text">실천인증</span></button>
+    <button onclick="navigateTo('theater')" class="nav-item text-blue-500"><span class="nav-icon">🎭</span><span class="nav-text">도덕극장</span></button>
+    <button onclick="navigateTo('quiz-home')" class="nav-item text-orange-500"><span class="nav-icon">❓</span><span class="nav-text">퀴즈</span></button>
+    <button onclick="navigateTo('chatbot')" class="nav-item text-blue-500"><span class="nav-icon">🤖</span><span class="nav-text">챗봇</span></button>
+    <button onclick="window.open('https://zep.us/play/Yv0w6n')" class="nav-item text-purple-500"><span class="nav-icon">🌐</span><span class="nav-text">메타버스</span></button>
+</nav>
+<script>
+    // --- 1. 데이터베이스 ("종이팩"을 "종이"보다 무조건 위로 올렸습니다!) ---
+    const chatbotRules = [
+        // --- [1] 도덕적 덕목 (10가지 마음 근육) ---
+        {
+            keywords: ["지속가능", "지속 가능한", "지속성", "생태적 지속가능성"],
+            name: "생태적 지속가능성",
+            def: "발전의 필요(인간의 편리)와 자연의 한계(지구의 용량) 사이에서, 경제적 효율성보다 '생태적 효율성'을 최우선으로 여기며 자연과 인간이 조화를 이루는 삶의 태도입니다.",
+            how: "도덕과에서 강조하는 3요소인 ①인간과 자연의 상호 의존, ②생태적 관계의 지속, ③이에 대한 인간의 책임을 기억하고 일상 속 과소비를 절제해야 해요.",
+            why: "지구의 자원은 유한하며, 생태계가 무너지면 결국 인간의 삶도 지속될 수 없기 때문입니다.",
+            good: "현재 세대의 필요를 충족하면서도 지구 생태계의 균형을 깨뜨리지 않는 바람직한 공존이 가능해집니다."
+        },
+        {
+            keywords: ["공존", "미래세대", "미래 세대", "세대 간 정의"],
+            name: "미래 세대와의 공존과 책임",
+            def: "아직 태어나지 않은 미래의 후손들도 깨끗하고 손상되지 않은 지구에서 살 권리가 있음을 인정하고, 현재 세대가 윤리적 책임을 다하는 것입니다.",
+            how: "유네스코의 '미래 세대에 대한 현재 세대의 책임에 관한 선언'에 따라 천연자원을 보호하고 플라스틱 지층이나 기후 재난을 물려주지 않도록 연대해야 합니다.",
+            why: "나 혼자 당장 편하자고 자원을 독차지하는 이기심은 결국 목초지를 황폐하게 만드는 '공유지의 비극'을 불러오기 때문이에요.",
+            good: "과거, 현재, 미래 세대가 시간의 축을 넘어 지구라는 공동의 집을 공평하게 나누어 쓸 수 있습니다."
+        },
+        {
+            keywords: ["녹색 넛지", "넛지", "디지털 기술", "인공지능 로봇"],
+            name: "디지털 기술을 활용한 녹색 넛지(Nudge)",
+            def: "인간에게 환경 보호를 강요(강제)하지 않고, 선택의 구조를 친환경 방향으로 부드럽게 변경하여 자발적인 행동 변화를 유도하는 디지털 실천 방식입니다.",
+            how: "우리가 스마트 미터를 통해 에너지 사용량을 직관적으로 확인하거나, AI 챗봇의 피드백을 보며 스스로 절제를 선택하도록 돕는 장치들이 대표적이에요.",
+            why: "인간의 자유를 침해하지 않으면서도, 인공지능과 디지털 기술을 기후 변화의 영향을 완화하는 도덕적 도구로 올바르게 활용할 수 있기 때문입니다.",
+            good: "억지로 하는 환경 보호가 아니라, 일상 속에서 즐겁고 자연스럽게 도덕적 행동을 습관화할 수 있습니다."
+        },
+        {
+            keywords: ["지구 위기", "기후 상승", "1도", "대형 산불"],
+            name: "지구 기온 1도 상승의 경고",
+            def: "인간의 무분별한 화석 연료 사용과 욕심으로 인해 지구 평균 기온이 산업화 이전보다 빠르게 상승하여 발생한 인류 전체의 생존 위기 상황입니다.",
+            how: "KBS 다큐 인사이트에 등장하는 기후 위기 피해 지역 아이들의 아픔에 공감하고, 일상에서 데이터 센터 전력을 소모하는 무분별한 디지털 낭비를 줄여야 합니다.",
+            why: "지구 온도가 1도 오를 때마다 전 세계의 대형 산불, 해수면 상승으로 인한 교실 침수 등 돌이킬 수 없는 재앙이 현실로 다가오기 때문입니다.",
+            good: "기후 정의를 실현하고 지금 우리 세대뿐만 아니라 지구 생태계 전체의 안전을 지켜낼 수 있습니다."
+        },
+        {
+            keywords: ["절제"],
+            name: "절제",
+            def: "나의 욕심을 스스로 조절하고, 꼭 필요한 만큼만 사용하는 마음이에요.",
+            how: "새 물건을 사기 전에 '정말 필요한가?' 한 번 더 생각하고, 일회용품 사용을 줄이는 것이 진정한 절제예요.",
+            why: "우리가 절제하지 않고 물건을 마구 쓰면, 지구가 쓰레기로 가득 차서 숨을 쉴 수 없게 돼요.",
+            good: "쓰레기 양이 확 줄어들고, 꼭 필요한 물건만 소중히 쓰는 습관이 생겨요."
+        },
+        {
+            keywords: ["생명존중", "생명"],
+            name: "생명존중",
+            def: "나뿐만 아니라 동식물, 자연의 모든 생명을 소중히 여기는 마음이에요.",
+            how: "종이 한 장을 쓸 때도 나무의 생명을 생각하며 아껴 쓰고, 다 쓴 종이는 꼭 재활용으로 분리해요.",
+            why: "우리가 버린 쓰레기는 바다거북이나 고래 같은 동물 친구들의 생명을 위협할 수 있어요.",
+            good: "숲이 울창해지고 동물 친구들이 안전하고 행복하게 살 수 있는 지구가 돼요."
+        },
+        {
+            keywords: ["책임"],
+            name: "책임",
+            def: "내가 맡은 일이나 내가 만든 결과를 끝까지 보살피는 마음이에요.",
+            how: "내가 쓴 물건이 쓰레기가 되었을 때, '비·행·분·섞' 규칙을 지켜 끝까지 올바르게 배출하는 거예요.",
+            why: "내가 버린 쓰레기를 누군가 대신 치워줄 거라는 생각은 지구에 대한 책임을 다하지 않는 거예요.",
+            good: "내가 버린 자원이 새로운 물건으로 다시 태어나는 멋진 순환이 일어나요."
+        },
+        {
+            keywords: ["정직"],
+            name: "정직",
+            def: "아무도 보지 않아도 양심에 어긋나지 않게 바르게 행동하는 마음이에요.",
+            how: "페트병 안쪽의 이물질을 깨끗이 씻고, 귀찮아도 라벨을 꼭 떼서 버리는 것이 정직한 분리배출이에요.",
+            why: "대충 섞어 버리면 재활용 센터에서 많은 사람이 고생하고, 결국 재활용도 되지 않아요.",
+            good: "지구와의 약속을 지켰다는 뿌듯함과 함께 깨끗한 환경을 선물 받을 수 있어요."
+        },
+        {
+            keywords: ["배려"],
+            name: "배려",
+            def: "다른 사람의 입장이나 상황을 먼저 생각하고 도와주는 따뜻한 마음이에요.",
+            how: "수거하시는 분들이 다치지 않게 깨진 유리는 신문지에 싸서 버리고, 박스는 잘 펴서 내놓아요.",
+            why: "우리의 작은 배려가 환경 미화원분들의 수고를 덜어주고 안전을 지켜줄 수 있어요.",
+            good: "서로 돕고 생각하는 마음이 모여 더 따뜻하고 살기 좋은 세상이 돼요."
+        },
+        {
+            keywords: ["공동체"],
+            name: "공동체 의식",
+            def: "우리가 함께 사는 우리 마을, 우리 학교를 소중히 생각하는 마음이에요.",
+            how: "정해진 배출 시간과 장소를 잘 지키고, 우리 동네 분리배출함 주변을 깨끗이 사용해요.",
+            why: "나 하나쯤이야 하는 마음으로 버리면 우리 모두가 사는 공간이 더러워지고 병들게 돼요.",
+            good: "우리 마을이 깨끗해지고 이웃 모두가 웃으며 지낼 수 있는 예쁜 환경이 만들어져요."
+        },
+        {
+            keywords: ["협력", "도움"],
+            name: "협력",
+            def: "더 좋은 결과를 위해 힘을 합쳐 함께 노력하는 태도예요.",
+            how: "가족이나 친구와 함께 분리배출을 하고, 올바른 방법을 서로 친절하게 알려주며 함께 실천해요.",
+            why: "혼자 하는 것보다 여럿이 함께할 때 지구를 구하는 힘은 훨씬 더 커지기 때문이에요.",
+            good: "자원순환이 더 빠르고 정확하게 이루어져 지구가 금방 건강해질 수 있어요."
+        },
+        {
+            keywords: ["공감"],
+            name: "공감",
+            def: "다른 생명이나 환경의 아픔을 나의 아픔처럼 느끼는 예쁜 마음이에요.",
+            how: "코에 빨대가 꽂힌 바다거북의 아픔에 공감하며, 플라스틱 빨대 대신 다회용 빨대를 사용해요.",
+            why: "자연의 아픔에 공감할 때 우리는 진심으로 지구를 지키고 싶은 마음이 생겨요.",
+            good: "모든 생명이 아프지 않고 함께 어울려 사는 평화로운 지구가 돼요."
+        },
+        {
+            keywords: ["성실"],
+            name: "성실",
+            def: "한두 번 하고 그만두는 게 아니라, 매일매일 꾸준히 정성을 다하는 마음이에요.",
+            how: "귀찮은 날에도 미루지 않고, 오늘 나온 쓰레기를 제자리에 올바르게 분리해서 버려요.",
+            why: "지구를 지키는 일은 단 한 번의 이벤트가 아니라 우리의 일상이 되어야 하기 때문이에요.",
+            good: "나의 꾸준한 노력이 모여 지구를 살리는 커다란 기적을 만들어내요."
+        },
+        {
+            keywords: ["인내"],
+            name: "인내",
+            def: "힘들고 번거로운 일도 꾹 참고 끝까지 해내는 끈기 있는 마음이에요.",
+            how: "잘 떼어지지 않는 스티커나 라벨을 끝까지 떼어내고, 끈적이는 통을 깨끗이 씻어내는 과정이에요.",
+            why: "조금 번거롭다고 포기하면 소중한 자원이 그냥 쓰레기가 되어 버려져요.",
+            good: "어려운 일도 해냈다는 자신감이 생기고, 지구를 위한 완벽한 분리배출이 완성돼요."
+        },
+        // --- [2] 기존 분리배출 정보 (종이, 플라스틱 등) ---
+        {
+            keywords: ["일반쓰레기","쓰레기","일반","종량제", "부직포", "깨진유리", "장판", "돗자리", "천막","물티슈","옥수수심","옥수수 심","뼈","껍데기","껍질","영수증","자석","티백","배변 패드","배변패드","씨","더러운","오염","오염된"],
+            name: "일반쓰레기",
+            def: "오염되거나 재활용이 불가능한 폐기물(먼지, 과일 씨, 딱딱한 과일 껍질, 부직포, 깨진 유리 등)을 말해요.",
+            how: "종량제 봉투에 담아 배출하며, 깨진 유리는 신문지로 감싸서 버려요.",
+            why: "재활용품에 일반쓰레기가 섞이면 재활용 과정에 문제가 생겨요.",
+            good: "종량제 봉투 구매 비용을 아끼고 재활용률을 크게 높일 수 있어요."
+        },
+        {
+            keywords: ["종이팩", "우유팩", "두유팩", "쥬스팩","팩"],
+            name: "종이팩",
+            def: "종이팩은 우유팩, 두유팩, 쥬스팩 등 음료를 담는 네모난 곽을 말해요.",
+            how: "내용물을 비우고 물로 헹구어 말린 후, 일반 종이와 섞이지 않게 전용수거함에 따로 배출해야 합니다.",
+            why: "일반 종이류와 재활용 공정이 달라서 섞이면 재활용되지 못해요.",
+            good: "분리배출된 종이팩은 고급 화장지나 미용 티슈로 재탄생합니다."
+        },
+        {
+            keywords: ["종이", "신문", "박스", "노트", "상자", "복사용지", "달력", "종이 쇼핑백", "포장지","휴지심","편지봉투","편지 봉투","공책","종이조각","종이 조각","책자"],
+            name: "종이",
+            def: "종이는 공책, 신문, 책, 택배 상자, 복사용지, 달력, 종이 쇼핑백, 포장지 등을 말해요.",
+            how: "물기에 젖지 않게 하고, 반듯하게 펴서 쌓은 후 끈으로 묶어 배출해요. 테이프나 스프링 등은 꼭 떼어내야 합니다.",
+            why: "일반 쓰레기와 섞이면 환경이 오염되고, 소중한 자원이 사라지기 때문이에요.",
+            good: "나무를 베지 않고 새 종이를 만들 수 있어 숲과 동물을 지킵니다."
+        },
+        {
+            keywords: ["금속캔", "캔", "통조림", "부탄가스", "알루미늄캔", "철캔", "분유통","가스통"],
+            name: "금속캔",
+            def: "금속캔은 콜라, 사이다, 주스, 커피 같은 음료수캔, 통조림캔, 부탄가스 용기, 분유통, 살충제 통 등을 말해요.",
+            how: "내용물을 비우고 물로 헹궈 배출하며, 가스 용기는 구멍을 뚫어 가스를 완전히 뺀 뒤 배출합니다.",
+            why: "우리나라는 광물자원을 수입하므로 철과 알루미늄 자원 재활용이 매우 중요해요.",
+            good: "재활용을 통해 철근, 강판, 새로운 캔으로 다시 태어날 수 있답니다."
+        },
+        {
+            keywords: ["비닐", "비닐봉투", "포장재", "뽁뽁이", "에어캡", "라면 봉지", "과자 봉지", "세탁소 비닐", "야채 망","라면봉지","과자봉지","세탁소비닐","야채망","완충포장재","완충 포장재","젤리 포장지","젤리포장지","비닐 포장지","비닐 봉투","비닐 봉지","비닐봉지","지퍼백","빈 지퍼백","비닐 위생장갑","비닐위생장갑"],
+            name: "비닐",
+            def: "비닐은 1회용 비닐봉투, 각종 비닐 포장재, 에어캡(뽁뽁이), 과자 봉지, 라면 봉지, 세탁소 비닐, 야채 망 등을 말해요.",
+            how: "이물질을 제거한 뒤, 흩날리지 않게 봉투에 담아 배출해요. 오염된 랩 등은 일반쓰레기로 버려야 합니다.",
+            why: "비닐이 일반쓰레기로 버려져 매립/소각되는 것을 막고 환경오염을 줄일 수 있어요.",
+            good: "새 비닐봉투, 화분, 건축자재, 연료 등으로 다시 태어납니다."
+        },
+        {
+            keywords: ["플라스틱", "페트병", "페트", "용기류", "pet", "PET", "Pet", "생수병", "장난감", "플라스틱 컵", "빨대", "삼푸통", "젤리통", "리코더", "쓰레받기","용기","볼풀"],
+            name: "플라스틱",
+            def: "플라스틱은 페트병 병, 생수병, 리코더, 쓰레받기 등 플라스틱 재질로 만들어진 용기들을 말해요.",
+            how: "내용물을 깨끗이 비우고 헹군 뒤, 라벨이나 뚜껑 등 본체와 다른 재질은 분리해서 배출합니다.",
+            why: "자연에서 썩는 데 수백 년이 걸리며 미세플라스틱으로 환경을 오염시키기 때문이에요.",
+            good: "옷을 만드는 원사나 새로운 플라스틱 제품으로 재탄생합니다."
+        },
+        {
+            keywords: ["음식물", "음식물쓰레기", "잔반", "찌꺼기", "밥", "빵", "두부", "면", "음식", "채소", "과일", "살","음식"],
+            name: "음식물 쓰레기",
+            def: "우리가 먹고 남긴 음식이나 찌꺼기를 말해요.",
+            how: "물기를 짜고 이물질(뼈 등)을 제거한 뒤 음식물 전용 수거함에 배출합니다.",
+            why: "그냥 버려지면 부패하면서 심한 냄새와 환경 오염을 일으켜요.",
+            good: "동물들의 사료, 식물의 퇴비, 바이오가스 연료로 유용하게 쓰여요."
+        },
+        {
+            keywords: ["유해폐기물","유해","유해환경", "폐건전지", "건전지", "폐형광등", "형광등", "폐의약품", "약","폐"],
+            name: "유해환경폐기물",
+            def: "폐건전지, 형광등, 약 등 인체나 환경에 유해한 폐기물이에요.",
+            how: "전용수거함(약은 약국/보건소)에 따로 안전하게 배출해야 합니다.",
+            why: "수은 등 유해물질을 포함하고 있어서 토양이나 수질을 심각하게 오염시켜요.",
+            good: "안전하게 수거되면 환경 오염을 막고 유용한 자원을 회수할 수 있어요."
+        },
+        {
+            keywords: ["유리병", "유리", "빈병", "소주병", "맥주병", "음료수병", "소스병", "꿀병", "약병", "병"],
+            name: "유리병",
+            def: "음료수병, 와인병, 양주병, 소스 등을 담아 쓰는 투명하거나 색깔이 있는 유리로 만들어진 병을 말해요.",
+            how: "내용물을 비우고 물로 헹구며, 이물질을 넣지 않아야 합니다.",
+            why: "유리는 자연 상태에서 분해되지 않아 환경을 오염시켜요.",
+            good: "새로운 유리병으로 쓰이고, 빈 병을 반납하면 보증금을 돌려받아요."
+        }
+    ];
+
+    // --- 2. 티키타카를 위한 기억 주머니 ---
+    let chatContext = null;
+
+function sendMessage() {
+    const inputField = document.getElementById('chat-input');
+    const chatWindow = document.getElementById('chat-window');
+
+    if (!inputField || !inputField.value.trim()) return;
+    const text = inputField.value.trim();
+
+    // 내 메시지 표시
+    const userDiv = document.createElement('div');
+    userDiv.className = 'flex justify-end mb-2';
+    userDiv.innerHTML = `<div class="bg-blue-600 text-white p-3 rounded-xl shadow-sm text-sm max-w-[90%]">${text}</div>`;
+    chatWindow.appendChild(userDiv);
+    inputField.value = '';
+
+    setTimeout(() => {
+        let matched = chatbotRules.find(r => r.keywords.some(k => text.includes(k)));
+        if (matched) chatContext = matched;
+
+        let reply = "";
+
+        // 🧠 [1단계] 아직 주제(쓰레기나 덕목 이름)가 정해지지 않았을 때
+        if (!chatContext) {
+            const questionKeywords = ["뭐", "무엇", "어떤", "뜻", "뭐야", "어떻게", "왜", "방법", "이유", "의미"];
+            const isQuestioning = questionKeywords.some(k => text.includes(k));
+
+            if (isQuestioning) {
+                // 6학년 교육과정(지속가능, 공존) 가이드 라인 문구 보강!
+                reply = `궁금한 <b>도덕 덕목, 분리배출 방법</b> 또는 6학년 <b>지속가능한 삶</b>에 대해 물어봐 주세요! ✨<br><br>` +
+                    `예를 들어 <b>'절제'</b>, <b>'플라스틱'</b> 또는 <b>'지속가능'</b> 같은 키워드를 먼저 말씀해 주시면 자세히 알려드릴게요. 😊`;
+            } else {
+                // 6학년 테마 단어까지 포괄하는 예외 메시지 처리
+                reply = `앗, 질문하신 내용은 아직 열심히 공부 중이에요! 😅<br><br><b>'분리배출 방법'</b>, <b>'지구 지킴이 덕목'</b> 또는 6학년 <b>'지속가능한 삶·공존'</b>에 대해 물어봐 주시겠어요? ✨`;
+            }
+        }
+        // 🧠 [2단계] 대화 주제(문맥)가 있는 상태일 때
+        else {
+            // 기초 인성 덕목 리스트
+            const virtuesList = ["절제", "생명존중", "책임", "정직", "배려", "공동체 의식", "협력", "공감", "성실", "인내"];
+            // 6학년 전용 도덕·환경 가치 리스트 정의
+            const ecoValuesList = ["생태적 지속가능성", "미래 세대와의 공존과 책임", "디지털 기술을 활용한 녹색 넛지(Nudge)", "지구 기온 1도 상승의 경고"];
+
+            const isVirtue = virtuesList.includes(chatContext.name);
+            const isEcoValue = ecoValuesList.includes(chatContext.name);
+
+            // 6학년 가치 문맥에 맞는 접미사(라벨) 분기 처리 기믹
+            let currentLabel = "배출 방법";
+            let whyLabel = "분리배출 이유";
+            let goodLabel = "재활용 효과";
+            let defLabel = "어떤 것들이 있나요?";
+
+            if (isVirtue) {
+                currentLabel = "실천 방법";
+                whyLabel = "지켜야 하는 이유";
+                goodLabel = "실천하면 좋은 점";
+                defLabel = "어떤 마음인가요?";
+            } else if (isEcoValue) {
+                currentLabel = "지속가능한 실천 행동";
+                whyLabel = "지향해야 하는 이유";
+                goodLabel = "지구 공동체에 미치는 효과";
+                defLabel = "어떤 의미인가요?";
+            }
+
+            // 질문 내용에 따른 답변 매칭 (라벨 적용)
+            if (text.includes("어떻게") || text.includes("방법") || text.includes("버려") || text.includes("실천")) {
+                reply = `✅ <b>[${chatContext.name}]</b> ${currentLabel}입니다:<br>${chatContext.how}`;
+            }
+            else if (text.includes("왜") || text.includes("이유") || text.includes("중요")) {
+                reply = `🧐 <b>[${chatContext.name}]</b> ${whyLabel}예요:<br>${chatContext.why}`;
+            }
+            else if (text.includes("효과") || text.includes("좋은") || text.includes("좋아") || text.includes("결과")) {
+                reply = `✨ <b>[${chatContext.name}]</b> ${goodLabel}입니다:<br>${chatContext.good}`;
+            }
+            else if (text.includes("뭐") || text.includes("무엇") || text.includes("뭐야") || text.includes("어떤") || text.includes("뜻") || text.includes("의미")) {
+                reply = `💡 <b>[${chatContext.name}]</b> ${defLabel}<br>${chatContext.def}`;
+            }
+            else if (matched) {
+                // 키워드 단독 입력 시 안내 멘트 세분화 (6학년 가치 전용 분기 추가)
+                if (isVirtue) {
+                    reply = `<b>[${chatContext.name}]</b>에 대해 궁금하시군요! ❤️<br><br>👉 <b>\"뜻이 뭐야?\"</b>, <b>\"어떻게 실천해?\"</b>, <b>\"왜 중요해?\"</b>라고 물어보세요!`;
+                } else if (isEcoValue) {
+                    reply = `6학년 지속가능 가치인 <b>[${chatContext.name}]</b>에 대해 궁금하시군요! 🌍<br><br>👉 <b>\"어떤 의미야?\"</b>, <b>\"어떻게 노력해야 해?\"</b>, <b>\"왜 공존해야 해?\"</b>라고 물어보세요!`;
+                } else {
+                    reply = `<b>[${chatContext.name}]</b>에 대해 궁금하시군요! ♻️<br><br>👉 <b>\"뭐가 있어?\"</b>, <b>\"어떻게 버려?\"</b>, <b>\"왜 해야 해?\"</b>라고 물어보세요!`;
+                }
+            } else {
+                reply = `앗, 그건 제가 아직 모르는 단어예요! 😅<br>우리 <b>[${chatContext.name}]</b>에 대해 마저 알아볼까요? ✨`;
+            }
+        }
+
+        // 화면 출력 부분 (innerHTML 필수!)
+        const botDiv = document.createElement('div');
+        botDiv.className = 'flex justify-start mb-2';
+        botDiv.innerHTML = `
+        <div class="flex items-start gap-2 max-w-[90%]">
+            <span class="text-2xl mt-1">🤖</span>
+            <div class="bg-white p-3 rounded-xl shadow-sm text-sm border border-gray-100 text-gray-800 leading-relaxed">${reply}</div>
+        </div>`;
+
+        chatWindow.appendChild(botDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }, 500);
+}
+    /* --- 데이터 정의 --- */
+    const recycleData = {
+        "종이": { def: "종이는 공책, 책, 신문지, 택배 상자 등 나무를 원료로 만들어진 소중한 자원이에요.", why: "종이 1톤을 재활용하면 30년생 나무 17그루를 살릴 수 있어 지구의 숲을 지켜줍니다.", how: "1. 비닐 테이프, 송장 스티커 제거\n2. 상자는 납작하게 펴기\n3. 오염된 종이는 종량제 봉투로\n4. 종류별로 묶어서 배출", tip: "영수증, 코팅지, 사진, 컵라면 용기 등은 재활용이 안 되니 일반 쓰레기로 버려주세요.", good: "나무가 많아지면 공기가 맑아지고 숲속 동물들의 집을 지켜줄 수 있습니다." },
+        "종이팩": { def: "우유나 주스를 담는 코팅된 종이 용기로, 일반 종이보다 훨씬 고급 재질이에요.", why: "따로 모으면 최고급 화장지나 키친타월로 다시 태어날 수 있는 보물입니다.", how: "1. 내용물 비우고 헹구기\n2. 가위로 잘라 펼치기\n3. 햇볕에 말리기\n4. 전용 수거함에 배출", tip: "주민센터에서 종이팩을 가져가면 화장지로 바꿔주는 보상 제도를 이용해 보세요!", good: "종이팩만 잘 모아도 우리나라가 수입하는 펄프 비용을 엄청나게 아낄 수 있어요." },
+        "금속캔": { def: "음료수 캔, 참치 캔, 부탄가스 통 등 철이나 알루미늄으로 만든 단단한 용기예요.", why: "재활용 시 철광석에서 뽑아낼 때보다 에너지를 95%나 아낄 수 있어 매우 경제적입니다.", how: "1. 안쪽 헹구기\n2. 플라스틱 뚜껑 분리\n3. 밟아서 압착하기\n4. 가스통은 구멍 뚫어 가스 제거", tip: "캔 속에 담배꽁초 같은 쓰레기를 넣으면 절대 안 돼요!", good: "산을 깎지 않아도 금속을 얻을 수 있어 지구 온난화를 막는 데 큰 힘이 됩니다." },
+        "유리병": { def: "음료, 잼, 소스 등을 담는 병으로 투명, 갈색, 초록색 등 다양한 색이 있어요.", why: "유리병을 재활용하면 다시 새 병으로 만들거나 건축 자재로 쓸 수 있습니다.", how: "1. 내용물 비우기\n2. 물로 헹구기\n3. 뚜껑 분리(캔/플라스틱으로)\n4. 색깔별로 나누어 배출", tip: "깨진 유리는 신문지에 두껍게 싸서 일반 쓰레기봉투에 버려주세요. 위험해요!", good: "빈 병 보증금 제도를 이용해 환경도 지키고 보증금도 돌려받아 보세요." },
+        "플라스틱": { def: "생수병, 샴푸통 등 가볍고 튼튼하지만 썩는 데 수백 년이 걸리는 물질이에요.", why: "깨끗하게 모으면 우리가 입는 옷이나 가방, 신발 등으로 멋지게 변신합니다.", how: "1. 내용물 비우기\n2. 헹구기\n3. 라벨 떼기\n4. 투명 페트병은 따로 모으기", tip: "음식물이 묻어 안 닦이는 용기나 너무 작은 플라스틱은 일반 쓰레기로 버려야 해요.", good: "바다거북과 고래 같은 바다 친구들의 소중한 생명을 지킬 수 있습니다." },
+        "비닐": { def: "과자 봉지, 라면 봉지, 일회용 봉투 등 가볍고 부드러운 플라스틱 재질입니다.", why: "녹여서 건축 자재를 만들거나 마을의 에너지를 만드는 고체 연료가 됩니다.", how: "1. 이물질 확인\n2. 씻어서 말리기\n3. 스티커 제거\n4. 모아서 날아가지 않게 배출", tip: "고무장갑, 돗자리, 천막 등은 비닐이 아니에요. 일반 쓰레기로 버려주세요.", good: "비닐이 바다로 흘러가 생물들을 아프게 하는 것을 막을 수 있습니다." },
+        "일반쓰레기": { def: "재활용이 안 되는 나머지 쓰레기들로, 태우거나 땅에 묻어 처리합니다.", why: "재활용되는 것과 정확히 구분해야 처리 비용을 줄이고 환경을 보호할 수 있어요.", how: "1. 지역 규격 봉투 사용\n2. 꼼꼼히 묶기\n3. 정해진 배출 시간 지키기", tip: "휴지, 기저귀, 코팅지, 칫솔 등은 모두 재활용이 안 되는 일반 쓰레기예요.", good: "우리 마을이 깨끗해지고 해충이나 나쁜 냄새가 생기는 것을 막아줍니다." },
+        "음식물": { def: "먹고 남은 찌꺼기로, 가공을 거쳐 동물의 사료나 식물의 비료가 됩니다.", why: "일반 쓰레기에 섞으면 땅이 오염되지만, 따로 모으면 소중한 자원이 됩니다.", how: "1. 물기 꽉 짜기\n2. 이물질(비닐, 이쑤시개 등) 제거\n3. 전용 수거함/봉투 사용", tip: "동물이 먹을 수 있는지 생각해보세요! 뼈, 껍데기, 씨앗은 일반 쓰레기입니다.", good: "지구가 뜨거워지는 나쁜 가스를 줄이고 자원을 건강하게 순환시킵니다." },
+        "유해환경폐기물": { def: "형광등, 건전지, 약 등 독성이나 위험한 성질이 있어 따로 관리해야 하는 쓰레기예요.", why: "그냥 버리면 독성 물질이 새어 나와 우리가 마시는 물과 땅을 심각하게 오염시킵니다.", how: "1. 형광등은 깨지지 않게 전용함으로\n2. 건전지는 폐건전지 수거함으로\n3. 남은 약은 약국이나 보건소로", tip: "장난감 속 아주 작은 버튼 건전지도 꼭 따로 모아서 버려야 해요!", good: "우리 몸에 해로운 독성 물질로부터 우리가족과 이웃의 건강을 지켜줍니다." }
+    };
+
+    const allVirtueQuizData = [
+        { v: "성실", q: "다 쓴 종이상자를 버릴 때, '성실'한 수호대라면 어떻게 처리할까요?", opts: ["그냥 그대로 버려요", "테이프를 떼고 납작하게 접어서 버려요", "비닐 봉지에 담아 버려요", "젖은 상자도 섞어서 버려요"], ans: 1 },
+        { v: "책임", q: "재활용이 안 되는 코팅지를 발견했어요. '책임'감 있는 처리 방법은?", opts: ["종이 재활용함에 넣어요", "비닐류 수거함에 넣어요", "일반쓰레기 봉투에 담아 버려요", "다른 상자 속에 숨겨요"], ans: 2 },
+        { v: "성실", q: "공책의 플라스틱 스프링, 어떻게 하는 게 '성실'한 모습일까요?", opts: ["그냥 통째로 버려요", "스프링을 분리해서 각각 버려요", "비닐에 싸서 버려요", "남이 떼줄 거라 믿어요"], ans: 1 },
+        { v: "공동체 의식", q: "비에 젖은 종이뭉치를 발견했어요. '우리 마을'을 생각한 올바른 방법은?", opts: ["그대로 섞어 버려요", "말려서 버리거나 종량제 봉투에 버려요", "물기가 있는 채로 버려요", "길가 구석에 두어요"], ans: 1 },
+        { v: "성실", q: "상자에 붙은 송장 스티커, 어떻게 처리하는 게 '성실'할까요?", opts: ["그대로 버려요", "완전히 떼어낸 뒤 상자만 버려요", "위에 매직으로 칠해요", "테이프를 더 붙여요"], ans: 1 },
+        { v: "책임", q: "종이팩(우유팩)을 버리기 전 가장 먼저 해야 할 '책임' 있는 행동은?", opts: ["내용물을 깨끗이 비워요", "검은 봉지에 넣어요", "구석에 숨겨요", "뚜껑만 닫아 버려요"], ans: 0 },
+        { v: "인내", q: "종이팩 배출을 위한 '인내'심 있는 실천 순서는?", opts: ["대충 버리기", "한 번 흔들고 버리기", "뭉쳐서 버리기", "비우고, 헹구고, 펼쳐서 말리기"], ans: 3 },
+        { v: "협력", q: "학교에서 종이팩을 모을 때, 친구들과 '협력'하는 멋진 모습은?", opts: ["몰래 일반 쓰레기에 버려요", "친구들과 함께 씻고 말려 수거함에 담아요", "친구 가방에 넣어요", "바닥에 쌓아둬요"], ans: 1 },
+        { v: "공동체 의식", q: "소중한 자원인 종이팩, 어디에 배출하는 게 정답일까요?", opts: ["아무 쓰레기통", "종이팩 전용 수거함", "화장실 휴지통", "놀이터 벤치"], ans: 1 },
+        { v: "배려", q: "수거하시는 분들이 냄새 때문에 힘들지 않게 '배려'하는 법은?", opts: ["향수를 뿌려요", "신문지로 싸요", "무시하고 버려요", "깨끗이 씻은 뒤 건조해서 내놓아요"], ans: 3 },
+        { v: "정의", q: "쓰레기가 보물이 되는 '자원순환', 어떤 마음이 '정의'로울까요?", opts: ["자원이 될 수 있음을 믿고 분리해요", "빨리 태워버려요", "남의 집 담에 둬요", "땅속에 파묻어요"], ans: 0 },
+        { v: "공동체 의식", q: "지구와 이웃을 지키는 수호대의 가장 멋진 행동은?", opts: ["나만 편하게 버리기", "자원 낭비하기", "환경에 신경 끄기", "아껴 쓰고 규칙 지키기"], ans: 3 },
+        { v: "절제", q: "일회용 컵을 쓰고 싶은 마음을 꾹 누르는 '절제'의 모습은?", opts: ["예쁜 일회용 컵 쓰기", "텀블러와 장바구니 사용하기", "비닐 봉투 쓰기", "나무 젓가락 쓰기"], ans: 1 },
+        { v: "성실", q: "매일매일 실천해야 할 가장 '성실'한 지구 사랑법은?", opts: ["꼼꼼하게 나누어 분리배출하기", "로봇을 기다리기", "몽땅 담아 내놓기", "대충 섞어 두기"], ans: 0 },
+        { v: "생명 존중", q: "유해폐기물, 어떻게 버려야 '생명'을 지킬 수 있을까요?", opts: ["불에 태워요", "일반 봉투에 넣어요", "전용 수거함에 안전하게 배출해요", "땅에 깊이 묻어요"], ans: 2 },
+        { v: "성실", q: "플라스틱 통 재활용의 '성실'한 4단계는?", opts: ["던져 버리기", "대충 버리기", "뚜껑 닫아 버리기", "비우고, 헹구고, 떼고, 나누기"], ans: 3 },
+        { v: "정의", q: "플라스틱 수거함에 들어갈 자격이 있는 '정의'로운 물건은?", opts: ["깨끗한 페트병", "깨진 거울", "양념 묻은 컵라면", "사용한 물티슈"], ans: 0 },
+        { v: "절제", q: "안 씻기는 플라스틱은 어떻게 하는 게 '절제'된 행동일까요?", opts: ["억지로 넣어요", "일반쓰레기 봉투에 버려요", "물에 일주일 담가요", "길가에 둬요"], ans: 1 },
+        { v: "책임", q: "샴푸통 펌프처럼 여러 재질이 섞인 물건을 처리하는 '책임' 있는 법은?", opts: ["플라스틱에 버려요", "유리병에 넣어요", "안 된다면 일반쓰레기로 버려요", "비닐류에 넣어요"], ans: 2 },
+        { v: "공감", q: "수거 돕는 분들을 생각하며, 플라스틱과 비닐을 구별하는 '공감' 방법은?", opts: ["재질 마크를 확인하고 나눠 버려요", "손에 잡히는 대로 넣어요", "무거우면 플라스틱으로 정해요", "기분에 따라 나눠요"], ans: 0 },
+        { v: "성실", q: "비닐류 배출 시 '성실'하게 확인해야 할 점은?", opts: ["뭉쳤는지 확인", "이물질 없는 깨끗한 상태인지 확인", "색깔 확인", "이름 확인"], ans: 1 },
+        { v: "책임", q: "과자나 라면 봉지를 버릴 때 '책임' 있는 배출 장소는?", opts: ["놀이터 쓰레기통", "비닐 전용 수거함", "음식물 쓰레기통", "종이 재활용함"], ans: 1 },
+        { v: "배려", q: "비닐이 바람에 날리지 않게 수거인을 '배려'하는 방법은?", opts: ["돌로 눌러요", "큰 봉투에 모아 흩어지지 않게 배출해요", "물에 적셔요", "땅에 묻어요"], ans: 1 },
+        { v: "정의", q: "떼기 힘든 스티커가 붙은 비닐, '정의'로운 선택은?", opts: ["억지로 넣어요", "일반쓰레기 봉투에 버려요", "유리병에 넣어요", "친구 집 쓰레기통에 넣어요"], ans: 1 },
+        { v: "공동체 의식", q: "마을 환경을 위해 비닐 배출 시 가장 '공동체'적인 행동은?", opts: ["몰래 버리기", "깨끗이 비우고 모아 버리기", "섞어 버리기", "아무 데나 쌓기"], ans: 1 },
+        { v: "책임", q: "음료수 캔 버릴 때 지구에 대한 '책임' 실천은?", opts: ["던져서 버려요", "헹구고 눌러서 버려요", "뚜껑 열어 버려요", "물 담아 버려요"], ans: 1 },
+        { v: "공동체 의식", q: "마을의 캔 수거함에 넣어도 되는 품목은?", opts: ["음료수 캔과 참치 캔", "사기 그릇", "고무 장갑", "나무 젓가락"], ans: 0 },
+        { v: "협력", q: "친구와 '협력'하여 자원을 아끼는 멋진 방법은?", opts: ["친구가 모은 걸 내가 버려요", "함께 씻고 눌러 수거함에 가져가요", "내기만 해요", "캔 속에 쓰레기 채워요"], ans: 1 },
+        { v: "생명 존중", q: "폭발 사고로부터 '생명을 존중'하는 스프레이 캔 배출법은?", opts: ["그대로 버려요", "구멍 뚫거나 가스 빼서 버려요", "불에 던져요", "물에 가라앉혀요"], ans: 1 },
+        { v: "성실", q: "캔을 발로 꽉 밟는 '성실'함의 결과는?", opts: ["소리가 재미있어요", "더 많은 자원을 한 번에 수거하게 도와줘요", "가벼워져요", "색깔이 예뻐져요"], ans: 1 },
+        { v: "책임", q: "유리병 배출 시 뚜껑 처리는 어떻게 '책임'질까요?", opts: ["병에 꼭 닫아 버려요", "따로 떼어 재질별로 버려요", "아무 데나 던져요", "병 속에 넣어요"], ans: 1 },
+        { v: "협력", q: "가족과 '협력'하여 유리병을 안전하게 버리는 법은?", opts: ["부모님 기다리기", "함께 닦고 뚜껑 나눠 배출하기", "병 깨뜨리기", "동생 다 시키기"], ans: 1 },
+        { v: "배려", q: "깨진 유리조각 버릴 때 '배려'하는 안전한 방법은?", opts: ["신문에 싸고 '유리 주의' 표시해요", "그냥 버려요", "유리 재활용함에 던져요", "모래에 묻어요"], ans: 0 },
+        { v: "성실", q: "유리병 겉면 종이 라벨, '성실'한 수호대의 행동은?", opts: ["안 떼요", "최대한 떼어서 버려요", "그림 그려요", "담가만 둬요"], ans: 1 },
+        { v: "공동체 의식", q: "빈병 보증금에 참여해 '공동체'에 기여하는 법은?", opts: ["병 깨뜨리기", "깨끗이 마트에 돌려주고 보증금 받기", "산에 던지기", "집에 쌓기"], ans: 1 },
+        { v: "정의", q: "사기 그릇이나 거울, '정의'로운 배출지는?", opts: ["유리 재활용함", "불연성 마대나 종량제 봉투", "의류 수거함", "음식물 쓰레기통"], ans: 1 },
+        { v: "책임", q: "일반쓰레기 버릴 때 지구를 위한 '책임' 있는 도구는?", opts: ["종이 가방", "지정된 종량제 봉투", "검은 비닐", "커다란 상자"], ans: 1 },
+        { v: "인내", q: "딱딱한 호두나 조개껍데기, '인내'하며 분류할 곳은?", opts: ["음식물 쓰레기통", "일반쓰레기 종량제 봉투", "플라스틱 수거함", "화단"], ans: 1 },
+        { v: "배려", q: "뾰족한 쓰레기 버릴 때 이웃을 '배려'하는 법은?", opts: ["튀어나오게 버려요", "끝을 꺾거나 감싸서 버려요", "길에 던져요", "재활용함에 넣어요"], ans: 1 },
+        { v: "정의", q: "일반쓰레기임을 알았을 때 '정의'로운 선택은?", opts: ["몰래 재활용함에 넣어요", "종량제 봉투로 옮겨 버려요", "길가에 둬요", "숨겨요"], ans: 1 },
+        { v: "공감", q: "동물 사료가 됨을 '공감'하는 음식물 배출법은?", opts: ["뼈다귀도 넣어요", "동물이 먹을 수 있는 부드러운 것만 넣어요", "봉지째 넣어요", "물기 가득 넣어요"], ans: 1 },
+        { v: "성실", q: "음식물 쓰레기 버리기 전 '성실'하게 해야 할 행동은?", opts: ["그냥 둬요", "물기를 꽉 짜서 부피 줄여요", "소금 뿌려요", "그대로 담아요"], ans: 1 },
+        { v: "정의", q: "수박 껍질 버릴 때 '정의'로운 모습은?", opts: ["그냥 던져요", "잘게 잘라 부피 줄여 배출해요", "길가에 버려요", "종이류에 버려요"], ans: 1 },
+        { v: "협력", q: "급식실에서 친구들과 '협력'하여 잔반 줄이는 법은?", opts: ["친구 줘요", "먹을 만큼만 받아 깨끗이 비워요", "식탁 밑에 숨겨요", "국통에 섞어요"], ans: 1 },
+        { v: "생명 존중", q: "음식물 자원 순환이 지구 '생명'에 좋은 이유는?", opts: ["쓰레기 많아져서", "다시 사료나 퇴비가 되어 자연으로 가니까", "냄새 나서", "돈 많이 들어서"], ans: 1 },
+        { v: "책임", q: "건전지 버릴 때 '책임' 있는 행동은?", opts: ["일반 쓰레기에 섞어요", "전용 폐건전지 수거함에 넣어요", "모래 속에 숨겨요", "하수구에 던져요"], ans: 1 },
+        { v: "생명 존중", q: "자연 생명 위해 폐건전지 따로 모으는 이유는?", opts: ["재미있어서", "중금속이 오염시키니까", "무거워서", "예뻐서"], ans: 1 },
+        { v: "정의", q: "전용 수거함 찾기 힘들 때 '정의'로운 대처는?", opts: ["길에 버려요", "위치를 확인해서 찾아가요", "가방에 넣어둬요", "대신 버려달라고 해요"], ans: 1 },
+        { v: "생명 존중", q: "물고기 아프지 않게 '생명 존중'하는 폐의약품 처리법은?", opts: ["변기에 버려요", "약국이나 보건소 수거함에 가져다줘요", "일반 봉투에 버려요", "산에 뿌려요"], ans: 1 },
+        { v: "책임", q: "폐형광등 처리 시 '책임'감 있는 모습은?", opts: ["깨뜨려 버려요", "깨지지 않게 조심해서 전용함에 넣어요", "신문지에 싸서 그냥 버려요", "복도에 둬요"], ans: 1 }
+    ];
+
+    /* --- 상태 관리 --- */
+    // 🚩 여기에 넣으세요
+    function isQuizRunning() {
+        const currentPage = historyStack[historyStack.length - 1];
+        // 4학년 퀴즈, 5학년 퀴즈 가드 조건식
+        const isBaseQuiz = currentPage === 'quiz-recycle' ||
+            (currentPage === 'quiz-virtue' && document.getElementById('virtue-intro').classList.contains('hidden'));
+
+        // 🚩 6학년 지속가능 공존 퀴즈 가드 조건식 강제 결합
+        const isSustainQuiz = currentPage === 'quiz-sustain' && document.getElementById('sustain-intro').classList.contains('hidden');
+
+        return isBaseQuiz || isSustainQuiz;
+    }
+    let currentItem = "";
+    let historyStack = ["home"];
+    let virtueStats = { "정의": 0, "생명 존중": 0, "공동체 의식": 0, "배려": 0, "협력": 0, "공감": 0, "책임": 0, "절제": 0, "성실": 0, "인내": 0 };
+    let selectedVirtueQuiz = [];
+    let virtueIdx = 0;
+    let virtueCorrectCount = 0;
+
+    function render() {
+        const currentPage = historyStack[historyStack.length - 1];
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-' + currentPage).classList.add('active');
+
+        // 네비게이션 활성화
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('nav-active'));
+        if (currentPage === 'home') document.querySelectorAll('.nav-item')[0].classList.add('nav-active');
+        else if (currentPage === 'practice') document.querySelectorAll('.nav-item')[2].classList.add('nav-active');
+        else if (currentPage.includes('quiz')) document.querySelectorAll('.nav-item')[4].classList.add('nav-active');
+        else document.querySelectorAll('.nav-item')[1].classList.add('nav-active');
+
+        window.scrollTo(0, 0);
+    }
+
+    function navigateTo(pageId) {
+        if (isQuizRunning()) {
+            if (!confirm("페이지를 벗어나면 퀴즈가 초기화됩니다. 이동하시겠습니까?")) {
+                return; // '아니오'를 누르면 여기서 중단되어 페이지가 안 바뀜
+            }
+        }
+        if (historyStack[historyStack.length - 1] !== pageId) {
+            historyStack.push(pageId);
+            render();
+        }
+    }
+
+    function goBack() {
+        if (isQuizRunning()) {
+            if (!confirm("페이지를 벗어나면 퀴즈가 초기화됩니다. 이동하시겠습니까?")) {
+                return;
+            }
+        }
+        if (historyStack.length > 1) {
+            historyStack.pop();
+            render();
+        }
+    }
+
+    function goHome() {
+        if (isQuizRunning()) {
+            if (!confirm("페이지를 벗어나면 퀴즈가 초기화됩니다. 이동하시겠습니까?")) {
+                return;
+            }
+        }
+        historyStack = ["home"];
+        render();
+    }
+
+    /* --- 가이드 로직 --- */
+    function selectItem(item) {
+        currentItem = item;
+        document.getElementById('sub-menu-title').innerText = item;
+        document.getElementById('btn-label-how').innerText = item + " 배출 방법은?";
+        navigateTo('sub-menu');
+    }
+
+    function showStepContent(step) {
+        const data = recycleData[currentItem];
+        const titles = { def: "🧐 무엇인가요?", why: "❓ 왜 해야 하나요?", how: currentItem + " 배출 방법은?", tip: "💡 헷갈리는 점", good: "🌍 지구가 좋아해요" };
+        const icons = { def: "🧐", why: "❓", how: "✅", tip: "💡", good: "🌍" };
+        document.getElementById('detail-icon').innerText = icons[step];
+        document.getElementById('detail-label').innerText = titles[step];
+        document.getElementById('detail-text').innerText = data[step];
+        navigateTo('detail');
+    }
+
+    /* --- 덕목 퀴즈 핵심 로직 --- */
+    function startVirtueQuiz() {
+        document.getElementById('virtue-intro').classList.remove('hidden');
+        document.getElementById('virtue-game').classList.add('hidden');
+        document.getElementById('virtue-result').classList.add('hidden');
+        document.getElementById('virtue-back-box').classList.remove('hidden');
+        navigateTo('quiz-virtue');
+    }
+
+    function startVirtueGame() {
+        document.getElementById('virtue-intro').classList.add('hidden');
+        document.getElementById('virtue-back-box').classList.add('hidden');
+        document.getElementById('virtue-game').classList.remove('hidden');
+
+        selectedVirtueQuiz = [...allVirtueQuizData].sort(() => Math.random() - 0.5).slice(0, 20);
+        virtueIdx = 0;
+        virtueCorrectCount = 0;
+        for (let k in virtueStats) virtueStats[k] = 0;
+
+        updateVirtueStats();
+        loadVirtueQuiz();
+    }
+
+    function updateVirtueStats(highlightKey = null) {
+        const container = document.getElementById('stat-container');
+        container.innerHTML = "";
+        for (const [key, val] of Object.entries(virtueStats)) {
+            const box = document.createElement('div');
+            box.className = `stat-box ${highlightKey === key ? 'highlight' : ''}`;
+            box.innerHTML = `<span class="stat-name">${key}</span><span class="stat-val">${val}</span>`;
+            container.appendChild(box);
+        }
+    }
+
+    function loadVirtueQuiz() {
+        if (virtueIdx >= 20) { showVirtueResult(); return; }
+
+        const data = selectedVirtueQuiz[virtueIdx];
+        document.getElementById('quiz-count').innerText = `${virtueIdx + 1} / 20`;
+        document.getElementById('step-progress').style.width = `${((virtueIdx + 1) / 20) * 100}%`;
+        document.getElementById('virtue-badge').innerText = data.v;
+        document.getElementById('virtue-question').innerText = data.q;
+
+        const optBox = document.getElementById('virtue-options');
+        optBox.innerHTML = "";
+        data.opts.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = "option-btn";
+            btn.innerText = opt;
+            btn.onclick = () => checkVirtueAnswer(i);
+            optBox.appendChild(btn);
+        });
+        document.getElementById('top-feedback').classList.add('hidden');
+    }
+
+    function checkVirtueAnswer(idx) {
+        const data = selectedVirtueQuiz[virtueIdx];
+        const feedback = document.getElementById('top-feedback');
+
+        if (idx === data.ans) {
+            virtueStats[data.v] += 5;
+            virtueCorrectCount++;
+            updateVirtueStats(data.v);
+            feedback.innerText = `✨ 정답! [${data.v}] 점수 상승!`;
+            feedback.className = "feedback-pop text-center font-black py-2 rounded-lg text-sm border bg-green-50 text-green-600 border-green-200";
+            feedback.classList.remove('hidden');
+            setTimeout(() => { virtueIdx++; loadVirtueQuiz(); }, 1000);
+        } else {
+            feedback.innerText = "❌ 다시 한번 생각해보세요!";
+            feedback.className = "feedback-pop text-center font-black py-2 rounded-lg text-sm border bg-red-50 text-red-600 border-red-200";
+            feedback.classList.remove('hidden');
+        }
+    }
+
+    function showVirtueResult() {
+        document.getElementById('virtue-game').classList.add('hidden');
+        document.getElementById('virtue-result').classList.remove('hidden');
+        document.getElementById('final-score-text').innerText = `20번의 미션 중 ${virtueCorrectCount}번 성공!`;
+
+        let report = "🌟 **성장 기록 리포트**<br><br>";
+        let hasScore = false;
+        for (const [key, val] of Object.entries(virtueStats)) {
+            if (val > 0) {
+                report += `• **${key}** 능력이 **${val}점**만큼 높아졌어요!<br>`;
+                hasScore = true;
+            }
+        }
+        document.getElementById('virtue-report').innerHTML = hasScore ? report : "다음에는 더 많은 덕목을 쌓아봐요!";
+    }
+
+    /* --- 초기화 --- */
+    window.onload = function () {
+        const grid = document.getElementById('item-grid');
+        const items = Object.keys(recycleData);
+        items.forEach(item => {
+            const btn = document.createElement('button');
+            btn.className = "menu-btn text-gray-700 text-xl";
+            btn.innerText = item;
+            btn.onclick = () => selectItem(item);
+            grid.appendChild(btn);
+        });
+        render();
+    };
+    const VIRTUES_LIST = ["성실", "책임", "절제", "배려", "공동체 의식", "협력", "정의", "생명존중", "공감", "인내"];
+    const TOTAL_QUESTIONS = 10;
+
+    const basicDilemmas = [
+        {
+            cat: "성실 vs 편의", sit: "분리배출함에 음식물이 묻은 플라스틱을 넣으려다 들켰다.",
+            opts: [
+                { t: "솔직히 인정하고 다시 씻어온다", e: { conv: -1, v: { "성실": 1, "책임": 1 } } },
+                { t: "모른 척 대충 버린다", e: { conv: 1, v: { "성실": -1, "책임": -1 } } }]
+        },
+
+        { cat: "책임 vs 귀찮음", sit: "우유팩을 씻어야 하는데 쉬는 시간이 1분 남았다. 그냥 버리고 놀러 갈까?", opts: [{ t: "그냥 버리고 놀러 간다", e: { conv: 1, v: { "책임": -1, "절제": -1 } } }, { t: "노는 걸 참고 끝까지 씻는다", e: { conv: -1, v: { "책임": 1, "인내": 1 } } }] },
+        { cat: "생명존중 vs 편의", sit: "친구와 운동장에 놀러 가다가 다친 새를 발견했다.", opts: [{ t: "일단 다친 새부터 안전한 곳으로 옮긴다", e: { conv: 1, v: { "생명존중": 1, "공감": 1 } } }, { t: "친구와 놀아야 하니 일단 간다", e: { conv: -1, v: { "공동체 의식": -1, "생명존중": -1 } } }] },
+        { cat: "협력 vs 무관심", sit: "친구가 분리배출을 어려워하고 있다. 도와주면 내 쉬는 시간이 줄어든다.", opts: [{ t: "모른 척하고 먼저 간다", e: { conv: 1, v: { "협력": -1, "배려": -1 } } }, { t: "시간이 줄어도 함께 도와준다", e: { conv: -1, v: { "협력": 1, "배려": 1 } } }] },
+        { cat: "정의 vs 관계", sit: "친한 단짝 친구가 쓰레기를 무단 투기하는 것을 목격했다.", opts: [{ t: "친구니까 그냥 모른 척한다", e: { conv: 1, v: { "정의": -1, "공동체 의식": -1 } } }, { t: "친구에게 그러면 안 된다고 단호히 말한다", e: { conv: -1, v: { "정의": 1, "성실": 1 } } }] },
+        { cat: "절제 vs 소비", sit: "일회용 컵을 쓰면 편하지만 쓰레기가 많이 나온다. 텀블러를 씻어 쓸까?", opts: [{ t: "귀찮으니 일회용 컵을 쓴다", e: { conv: 1, v: { "절제": -1, "인내": -1 } } }, { t: "조금 귀찮아도 텀블러를 씻어 쓴다", e: { conv: -1, v: { "절제": 1, "인내": 1 } } }] },
+        { cat: "공동체 vs 이기심", sit: "분리배출함 주변이 너무 지저분하다. 내 쓰레기만 버리고 갈까?", opts: [{ t: "내친김에 주변 쓰레기도 같이 정리한다", e: { conv: -1, v: { "공동체 의식": 1, "배려": 1 } } }, { t: "내 쓰레기만 대충 던져두고 간다", e: { conv: 1, v: { "공동체 의식": -1, "협력": -1 } } }] },
+        { cat: "배려 vs 시간", sit: "종이 상자에 테이프가 잔뜩 붙어있다. 떼어내려면 시간이 꽤 걸린다.", opts: [{ t: "귀찮은데 그냥 통째로 버린다", e: { conv: 1, v: { "배려": -1, "성실": -1 } } }, { t: "시간이 걸려도 테이프를 전부 제거한다", e: { conv: -1, v: { "배려": 1, "성실": 1 } } }] },
+        { cat: "공감 vs 편의", sit: "청소하시는 분이 무거운 쓰레기통을 힘겹게 옮기고 계신다.", opts: [{ t: "나와 상관없는 일이니 지나간다", e: { conv: 1, v: { "공감": -1, "협력": -1 } } }, { t: "잠깐 다가가서 함께 들어드린다", e: { conv: -1, v: { "공감": 1, "협력": 1 } } }] },
+        { cat: "인내 vs 포기", sit: "페트병 라벨이 너무 안 뜯어진다. 손톱도 아프고 짜증이 난다.", opts: [{ t: "화나는 마음을 가라앉히고 끝까지 뜯는다", e: { conv: -1, v: { "인내": 1, "절제": 1 } } }, { t: "에잇, 짜증나! 그냥 안 뜯고 버린다", e: { conv: 1, v: { "인내": -1, "절제": -1 } } }] },
+        { cat: "성실 vs 요령", sit: "안이 보이지 않는 검은 비닐봉투가 있다. 이 안에 쓰레기를 몰래 섞어 버릴까?", opts: [{ t: "아무도 모르니 그냥 섞어 버린다", e: { conv: 1, v: { "성실": -1, "정의": -1 } } }, { t: "보이지 않아도 원칙대로 따로 분리한다", e: { conv: -1, v: { "성실": 1, "정의": 1 } } }] },
+        { cat: "책임 vs 회피", sit: "내가 잘못 버린 쓰레기 때문에 분리수거장이 엉망이 된 것 같다.", opts: [{ t: "내 탓이 아닌 척 조용히 자리를 피한다", e: { conv: 1, v: { "책임": -1, "공동체 의식": -1 } } }, { t: "내 잘못을 인정하고 다시 정리한다", e: { conv: -1, v: { "책임": 1, "공동체 의식": 1 } } }] },
+        { cat: "절제 vs 유혹", sit: "새로운 학용품이 예뻐서 사고 싶다. 하지만 집에 아직 쓸 만한 게 많다.", opts: [{ t: "예쁘니까 일단 새로 산다", e: { conv: 1, v: { "절제": -1, "생명존중": -1 } } }, { t: "집에 있는 것을 다 쓸 때까지 참는다", e: { conv: -1, v: { "절제": 1, "생명존중": 1 } } }] },
+        { cat: "정의 vs 침묵", sit: "누군가 쓰레기통에 건전지(유해물질)를 몰래 버리는 것을 봤다.", opts: [{ t: "나서기 귀찮으니 모른 척한다", e: { conv: 1, v: { "정의": -1, "용기": -1 } } }, { t: "위험하다고 알려주고 수거함에 넣게 한다", e: { conv: -1, v: { "정의": 1, "공감": 1 } } }] },
+        { cat: "생명존중 vs 편리함", sit: "바다거북이 비닐을 먹고 아파하는 영상을 보았다. 지금 내 손엔 비닐 쓰레기가 있다.", opts: [{ t: "영상을 떠올리며 비닐을 깨끗이 씻어 분리한다", e: { conv: -1, v: { "생명존중": 1, "공감": 1 } } }, { t: "불쌍하긴 한데, 일단 대충 버린다", e: { conv: 1, v: { "생명존중": -1, "공감": -1 } } }] },
+        { cat: "책임 vs 무관심", sit: "다른 사람이 잘못 버린 플라스틱 컵이 굴러다니는 것을 발견했다.", opts: [{ t: "내 알 바 아니니 그냥 지나간다", e: { conv: 1, v: { "공동체 의식": -1, "정의": -1 } } }, { t: "주워서 분리배출함에 넣는다", e: { conv: -1, v: { "공동체 의식": 1, "정의": 1 } } }] },
+        { cat: "책임 vs 무관심", sit: "지금 주변에 아무도 없고, cctv도 없고, 선생님도 안 계신다.", opts: [{ t: "아무도 안 보니 아무렇게나 버린다.", e: { conv: 1, v: { "책임": -1, "성실": -1 } } }, { t: "양심에 따라 정확히 분리배출한다", e: { conv: -1, v: { "공동체 의식": 1, "정의": 1 } } }] },
+        { cat: "인내 vs 포기", sit: "팩에 붙은 비닐 빨대를 떼기가 너무 어렵고 귀찮다.", opts: [{ t: "그대로 대충 버린다.", e: { conv: 1, v: { "인내": -1, "절제": -1 } } }, { t: "끝까지 분리해서 버린다", e: { conv: -1, v: { "인내": 1, "절제": 1 } } }] },
+        {
+            cat: "공동체 vs 편의", sit: "등굣길에 마시던 일회용 플라스틱 컵이 짐이 되었다.",
+            opts: [
+                { t: "미화원을 생각하며 쓰레기통이 나올 때까지 가방에 들고 간다", e: { conv: -1, v: { "공동체 의식": 1, "책임": 1 } } },
+                { t: "들고 가기 귀찮으니 화단 구석 틈새에 슬쩍 얹어두고 간다", e: { conv: 1, v: { "공동체 의식": -1, "절제": 1 }} }
+            ]
+        },
+        {
+            cat: "책임 vs 편의", sit: "더운 여름날, 물을 마시고 페트병 라벨을 떼기 귀찮다.",
+            opts: [
+                { t: "귀찮아도 라벨을 떼서 제대로 분리배출한다", e: { conv: -1, v: { "책임": 1, "성실": 1 } } },
+                { t: "에라 모르겠다, 그냥 통째로 던져 넣는다", e: { conv: 1, v: { "책임": -1, "성실": -1 } } } 
+            ]
+        },
+        { cat: "인내 vs 편의", sit: "음료수병이 너무 끈적거려 손이 더러워질 것 같다.", opts: [{ t: "손 버리기 싫으니 그냥 버린다.", e: { conv: 1, v: { "성실": -1, "책임": -1 } } }, { t: "손이 더러워져도 씻어 배출한다.", e: { conv: -1, v: { "성실": 1, "책임": 1 } } }] }
+    ];
+    // 6학년 지속가능 거대담론 (10문항)
+    const sustainDilemmas = [ 
+        { cat: "세대 간 정의 vs 나의 편의", sit: "6학년 도덕 시간에 배운 '데이터 센터 온실가스'가 떠올랐다. 유튜브 동영상을 자동 재생으로 켜두고 잘까?", opts: [{ t: "미래 세대의 환경 권리를 생각하며 동영상 자동 재생을 끈다.", e: { conv: -1, v: { "절제": 1, "책임": 1 } } }, { t: "나의 편안한 수면을 위해 그냥 켜둔 채로 잔다.", e: { conv: 1, v: { "절제": -1, "책임": -1 } } }] },
+        { cat: "공공선 추구 vs 이기심", sit: "교실에 아무도 없는데 냉방기가 돌아가고 있다. 내가 켠 게 아니니 그냥 갈까?", opts: [{ t: "'공유지의 비극'을 막기 위해 내가 번거롭더라도 다가가 전원을 끈다.", e: { conv: -1, v: { "공동체 의식": 1, "책임": 1 } } }, { t: "내가 켠 것이 아니므로 상관하지 않고 교실을 나간다.", e: { conv: 1, v: { "공동체 의식": -1, "책임": -1 } } }] },
+        { cat: "생태적 성찰 vs 과소비", sit: "친환경 한정판 에코백이 예쁘다. 집에 가방이 많지만 유행을 따라 사고 싶다.", opts: [{ t: "친환경 제품이라도 과소비는 자원 낭비임을 인지하고 구매를 참는다.", e: { conv: -1, v: { "절제": 1, "성실": 1 } } }, { t: "친환경 마크가 붙어 있으니 환경에 도움 될 거라 합리화하며 구매한다.", e: { conv: 1, v: { "절제": -1, "성실": -1 } } }] },
+        { cat: "지구적 연대 vs 관계 침묵", sit: "친구가 '종이컵 조금 쓰는 게 지구 오염이랑 무슨 상관이냐'며 막 쓴다.", opts: [{ t: "미래 후손들과 지구 공동체를 위해 함께 아껴 쓰자고 설득한다.", e: { conv: -1, v: { "정의": 1, "공감": 1 } } }, { t: "관계가 서먹해질 수 있으니 그냥 웃으며 대화를 넘긴다.", e: { conv: 1, v: { "정의": -1, "공감": -1 } } }] },
+        { cat: "녹색 넛지 실천 vs 귀찮음", sit: "급식실 잔반 통 크기가 줄어들었다. 싫어하는 반찬이 나왔는데 어떻게 할까?", opts: [{ t: "처음부터 급식 선생님께 먹을 만큼만 달라고 말씀드린다.", e: { conv: -1, v: { "성실": 1, "배려": 1 } } }, { t: "다 받아 간 뒤 친구들이 보지 않을 때 잔반 통에 몰래 버린다.", e: { conv: 1, v: { "성실": -1, "배려": -1 } } }] },
+        { cat: "기후 정의 vs 외면", sit: "가난한 나라 어린이들이 기후 피해를 입는 뉴스를 보았다.", opts: [{ t: "기후 불평등에 책임감을 느끼고 일상 속 탄소 줄이기에 동참한다.", e: { conv: -1, v: { "정의": 1, "공감": 1 } } }, { t: "우리 나라 일이 아니니 채널을 돌린다.", e: { conv: 1, v: { "정의": -1, "공감": -1 } } }] },
+        { cat: "생명 가치 존중 vs 개발 우선", sit: "산불로 서식지를 잃어가는 야생 동물 소식을 들었다.", opts: [{ t: "인간뿐 아니라 모든 생명의 권리를 존중하며 보호 활동을 지지한다.", e: { conv: -1, v: { "생명 존중": 1, "공동체 의식": 1 } } }, { t: "인간의 편의와 개발이 먼저이므로 어쩔 수 없는 일이라 생각한다.", e: { conv: 1, v: { "생명 존중": -1, "공동체 의식": -1 } } }] },
+        { cat: "미래세대 책임 vs 현재 편의", sit: "축제 때 준비가 번거로운 다회용기 대신 일회용을 쓰자고 한다.", opts: [{ t: "쓰레기 산을 물려주지 않기 위해 조금 불편해도 다회용기를 사용한다.", e: { conv: -1, v: { "책임": 1, "협력": 1 } } }, { t: "축제날 하루쯤은 편하게 일회용품을 쓰자고 동의한다.", e: { conv: 1, v: { "책임": -1, "협력": -1 } } }] },
+        {
+            cat: "자발적 절제 vs 유혹",
+            sit: "텀블러를 깜빡했는데 친구가 옆에서 '종이컵 하나쯤이야 괜찮아, 이거 써'라며 종이컵을 건넨다.",
+            opts: [
+                { t: "친구에게 고맙지만 오늘은 환경을 위해 참고, 다음에 꼭 텀블러를 챙겨오겠다고 다짐한다.", e: { conv: -1, v: { "절제": 1, "인내": 1 } } },
+                { t: "친구의 호의를 거절하기 미안하고 목도 마르니 그냥 종이컵을 받아 사용한다.", e: { conv: 1, v: { "절제": -1, "인내": -1 } } }
+            ]
+        },
+        {
+            cat: "지구적 연대 vs 무관심",
+            sit: "인터넷을 하다 지구 반대편 기후 위기 지역의 기후 난민 뉴스를 보았다. 기부나 캠페인 서명 요청을 마주했다.",
+            opts: [
+                { t: "인간과 자연은 긴밀히 연결되어 있음을 인지하고 서명과 작은 실천에 동참한다.", e: { conv: -1, v: { "공동체 의식": 1, "협력": 1 } } },
+                { t: "먼 나라 이야기일 뿐이야. 나와 상관없으니 인터넷 창을 닫고 다른 예능을 본다.", e: { conv: 1, v: { "공동체 의식": -1, "협력": -1 } } }
+            ]
+        },
+        {
+            cat: "공공선 추구 vs 나의 편의",
+            sit: "패션 브랜드에서 엄청나게 저렴하고 트렌디한 '패스트 패션' 옷들을 한정 수량으로 파는 것을 보았다. 금방 버려질 옷 같긴 한데...",
+            opts: [
+                { t: "환경 오염과 자원 낭비를 줄이기 위해 유행을 타지 않고 오래 입을 수 있는 옷을 고른다.", e: { conv: -1, v: { "공동체 의식": 1, "절제": 1 }} },
+                { t: "싸고 이쁘면 그만이지! 일단 여러 벌 사서 한 철 입고 유행 지나면 버린다.", e: { conv: 1, v: { "공동체 의식": -1, "절제": -1 }}}
+            ]
+               },
+        {
+            cat: "세대 간 정의 vs 나의 편의",
+            sit: "여름철 방 안이 너무 덥다. 에어컨 온도를 18도로 맞춰서 방안을 빠르게 얼음장처럼 차갑게 만들고 싶다.",
+            opts: [
+                { t: "미래 세대의 기후 위기를 예방하기 위해 적정 선풍기를 함께 틀고 26도를 유지한다.", e: { conv: -1, v: { "정의": 1, "절제": 1 }} },
+                { t: "지금 당장 내가 시원한 게 제일 중요하다. 에어컨을 최저 온도로 강하게 가동한다.", e: { conv: 1, v: { "정의": -1, "절제": -1 } }  }
+            ]
+        },
+        {
+            cat: "자발적 절제 vs 편의", sit: "양치질을 하는데 시원하게 물을 계속 틀어놓고 싶다.",
+            opts: [
+                { t: "물이 없어서 오염된 물을 마시는 다른 나라의 어린이들을 생각하며 컵에 물을 받아 필요한 만큼만 쓴다.", e: { conv: -1, v: { "절제": 1, "정의": 1 }}},
+                { t: "컵을 사용하는게 너무 귀찮으니 그냥 수도꼭지를 콸콸 틀어놓고 물을 펑펑 쓰며 양치를 자유롭게 한다.", e: { conv: 1, v: { "절제": -1 } } }
+            ]
+        },
+        { cat: "공공선 추구 vs 방관", sit: "이면지 수거함에 깨끗한 종이가 마구 낭비되어 버려져 있다.", opts: [{ t: "낭비되는 자원을 줄이기 위해 쓸 만한 이면지를 골라 교실로 챙겨온다.", e: { conv: -1, v: { "공동체 의식": 1, "성실": 1 } } }, { t: "내가 버린 것도 아니고 환경 도우미가 있으니 무시한다.", e: { conv: 1, v: { "공동체 의식": -1, "성실": -1 } } }] }
+    ];
+    let theatervirtueStats = {};
+    let selectedDilemmas = [];
+    let radarChart = null;
+    let theaterMode = 'basic'; 
+    let theaterCurrentIdx = 0;
+    let theaterConvScore = 0;
+    let currentTotalQuestions = 10;
+
+    function startTheater(mode) {
+        theaterCurrentIdx = 0;
+        theaterConvScore = 0;
+        theaterMode = mode || 'basic';
+
+        // 편의성 게이지 초기화
+        const convBar = document.getElementById('conv-bar');
+        const convText = document.getElementById('conv-text');
+        if (convBar) convBar.style.width = "0%";
+        if (convText) convText.innerText = "0%";
+
+        // 덕목 초기 스탯 세팅
+        VIRTUES_LIST.forEach(v => theatervirtueStats[v] = 70);
+
+        // 🚩 핵심 수정: 슬라이싱 편법을 없애고 원천 데이터 배열을 완전 분리 매칭
+        if (theaterMode === 'sustain') {
+// 6학년 모드: 전체 13개 문제 중에서 무작위로 섞은 후 "딱 7개"만 슬라이싱하여 세팅!
+            currentTotalQuestions = 7;
+            selectedDilemmas = [...sustainDilemmas].sort(() => Math.random() - 0.5)
+            .slice(0, currentTotalQuestions);
+        } else {
+            // 4~5학년 모드: 일상물 데이터를 추출 (무작위 섞기 후 10개 추출)
+            selectedDilemmas = [...basicDilemmas].sort(() => Math.random() - 0.5).slice(0, 10);
+            currentTotalQuestions = selectedDilemmas.length;
+        }
+
+        document.getElementById('theater-intro').classList.add('hidden');
+        document.getElementById('theater-result').classList.add('hidden');
+        document.getElementById('theater-game').classList.remove('hidden');
+
+        renderScenario();
+    }
+
+    function renderScenario() {
+        const dilemma = selectedDilemmas[theaterCurrentIdx];
+        if (!dilemma) {
+            console.error("데이터를 찾을 수 없습니다.");
+            return;
+        }
+
+        const stepCounter = document.getElementById('step-counter');
+        const categoryBadge = document.getElementById('category-badge');
+        const scenarioText = document.getElementById('scenario-text');
+        const choiceContainer = document.getElementById('choice-container');
+
+        if (stepCounter) stepCounter.innerText = `상황 ${theaterCurrentIdx + 1}/${currentTotalQuestions}`;
+        if (categoryBadge) categoryBadge.innerText = dilemma.cat;
+        if (scenarioText) scenarioText.innerText = dilemma.sit;
+
+        // 1. 기존에 있던 선택지 버튼 싹 비우기
+        choiceContainer.innerHTML = '';
+
+        // 2. 🚩 [핵심 해결] 4~5학년 데이터 규격({t:"..."})과 6학년 데이터 규격(텍스트 문자열) 통합 처리 및 무작위 셔플링
+        let formattedChoices = dilemma.opts.map(option => {
+            // 만약 선택지가 객체 형태이고 안에 t 속성이 있다면 그대로 쓰고, 그냥 문자열이라면 t 객체로 강제 리모델링
+            if (typeof option === 'object' && option.t) {
+                return option;
+            } else {
+                // 6학년 텍스트 보기도 도덕극장 수식 엔진 규격에 맞게 자동 변환
+                // 힌트: 텍스트 내부에 '참는다', '끈다', '실천한다', '설득한다', '말씀드린다' 등 긍정어가 있으면 도덕 실천(-1), 아니면 편의추구(1)로 가중치 자동 매핑
+                const isMoral = option.includes('참는다') || option.includes('끈다') || option.includes('실천') || option.includes('설득') || option.includes('말씀드린다');
+                return {
+                    t: option,
+                    e: isMoral ? { conv: -1, v: { "절제": 1, "책임": 1, "공동체 의식": 1, "성실": 1, "배려": 1, "정의": 1, "공감": 1 } } : { conv: 1, v: { "절제": -1, "책임": -1, "공동체 의식": -1, "성실": -1, "배려": -1, "정의": -1, "공감": -1 } }
+                };
+            }
+        });
+
+        // 3. 🚩 [치팅 방지] 보기 순서를 완전히 무작위로 섞어서 무조건 상단 버튼이 긍정적이 되지 않도록 분산!
+        formattedChoices.sort(() => Math.random() - 0.5);
+
+        // 4. 정제 완료된 선택지 버튼 동적 생성 및 출력
+        formattedChoices.forEach(option => {
+            const btn = document.createElement('button');
+            btn.className = "w-full bg-white border-2 border-slate-200 p-5 rounded-2xl text-left font-bold hover:border-blue-500 hover:bg-blue-50 transition-all shadow-sm active:scale-95 mb-3 text-sm";
+            btn.innerHTML = option.t; // 이제 undefined 없이 글자가 꽉 차서 나옵니다!
+
+            btn.onclick = () => {
+                let feedbackHTML = "";
+
+                // 덕목 점수 및 시각화 토스트 연산
+                if (option.e && option.e.v) {
+                    for (const virtue in option.e.v) {
+                        if (theatervirtueStats[virtue] !== undefined) {
+                            let change = option.e.v[virtue] * 10;
+                            theatervirtueStats[virtue] += change;
+
+                            if (theatervirtueStats[virtue] > 100) theatervirtueStats[virtue] = 100;
+                            if (theatervirtueStats[virtue] < 0) theatervirtueStats[virtue] = 0;
+
+                            const color = change > 0 ? 'text-green-500' : 'text-red-500';
+                            const sign = change > 0 ? '▲' : '▼';
+                            feedbackHTML += `<div class="${color} font-bold text-lg">${sign} ${virtue}</div>`;
+                        }
+                    }
+                }
+
+                // 편의지수 누적
+                if (option.e && option.e.conv > 0) {
+                    theaterConvScore += 1;
+                }
+
+                const toast = document.getElementById('stat-feedback');
+                if (toast) {
+                    toast.innerHTML = feedbackHTML || (option.e.conv > 0 ? "<span class='text-orange-500 font-bold'>▲ 편의추구</span>" : "<span class='text-blue-500 font-bold'>▲ 실천의지</span>");
+                    toast.classList.remove('pop-up');
+                    void toast.offsetWidth;
+                    toast.classList.add('pop-up');
+                }
+
+                nextTheaterStep();
+            };
+            choiceContainer.appendChild(btn);
+        });
+    }
+    function nextTheaterStep() {
+        theaterCurrentIdx++;
+        // 🚩 동적 마감선 검증 조율
+        if (theaterCurrentIdx < currentTotalQuestions) {
+            renderScenario();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('theater-game').classList.add('hidden');
+        document.getElementById('theater-result').classList.remove('hidden');
+
+        let finalScore = theaterConvScore;
+        if (finalScore < 0) finalScore = 0;
+        if (finalScore > currentTotalQuestions) finalScore = currentTotalQuestions;
+
+        // 🚩 동적 분모(5 또는 10)를 기준으로 최종 퍼센트 정밀 계산
+        const percent = Math.round((finalScore / currentTotalQuestions) * 100);
+
+        setTimeout(() => {
+            document.getElementById('conv-bar').style.width = percent + "%";
+            document.getElementById('conv-text').innerText = percent + "%";
+        }, 300);
+
+        let msg = "";
+        if (percent >= 70) {
+            msg = "당장의 편리함보다는 지구와 우리 모두를 위해 도덕적 책임감을 가져야 할 때입니다! 조금 더 용기를 내어 올바른 실천을 시작해 봅시다.";
+        } else if (percent >= 30) {
+            msg = "가끔은 편안함의 유혹에 흔들릴 때도 있지만, 지구를 지키기 위해 조금만 더 노력해 보는 건 어떨까요?";
+        } else {
+            msg = "당신은 자신의 불편함을 기꺼이 감수하는 고결한 도덕성을 지니고 있습니다! 진정한 환경 영웅입니다!";
+        }
+        document.getElementById('feedback-msg').innerText = msg;
+
+        // ==========================================
+        // 📊 레이더 차트 색감 균형 보정 스크립트
+        // ==========================================
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        if (radarChart) radarChart.destroy();
+
+        // 학년 모드별 색상 정의 (4~5학년: 선명한 파란색 시스템, 6학년: 정돈된 스마트 블루/퍼플)
+        const isSustain = (theaterMode === 'sustain');
+        
+        // 6학년 모드일 때 너무 튀지 않도록 불투명도(0.2)와 하이라이트 색감을 정밀 조정합니다.
+        const bgColor = isSustain ? 'rgba(99, 102, 241, 0.25)' : 'rgba(37, 99, 235, 0.2)';
+        const borderColor = isSustain ? '#6366f1' : '#2563eb';
+        const pointColor = isSustain ? '#6366f1' : '#2563eb';
+
+        radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: VIRTUES_LIST,
+                datasets: [{
+                    data: VIRTUES_LIST.map(v => theatervirtueStats[v]),
+                    backgroundColor: bgColor,       // 6학년 모드도 흰 배경이 부드럽게 감돌도록 보정
+                    borderColor: borderColor,       // 선 굵기 색상 밸런스 매칭
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointBackgroundColor: pointColor,
+                    pointBorderColor: '#ffffff',    // 포인트 테두리를 흰색으로 주어 하얀 느낌 통일
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        min: 0,
+                        max: 100,
+                        ticks: { display: false, stepSize: 20 },
+                        grid: { color: 'rgba(0, 0, 0, 0.08)' }, // 투명도 일치
+                        angleLines: { color: 'rgba(0, 0, 0, 0.08)' },
+                        pointLabels: {
+                            font: { size: 12, weight: 'bold' },
+                            color: '#374151'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+
+</script>
