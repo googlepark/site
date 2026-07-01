@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자연愛Green - 정통 덕목 보난자 (마스터판 - 찐통신)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <style>
+        .hand-card { transition: all 0.2s; }
+        .active-hand { ring: 4px solid #fbbf24; transform: translateY(-10px); z-index: 50; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-slate-100 p-4 font-sans text-slate-800 overflow-hidden">
+
+    <div class="max-w-6xl mx-auto bg-white rounded-[30px] shadow-2xl border-2 border-emerald-500 overflow-hidden h-[95vh] flex flex-col">
+        
+        <div id="net-layer" class="absolute inset-0 z-[100] bg-slate-900 flex flex-col items-center justify-center text-white p-10 text-center">
+            <h1 class="text-5xl font-black mb-4 text-emerald-400">VIRTUE BONANZA</h1>
+            <p class="mb-10 text-slate-400 text-lg">4대 태블릿 실시간 연동 - 정식 보난자 룰 시스템</p>
+            
+            <div id="setup-ui" class="block">
+                <div class="flex gap-4 mb-8 justify-center">
+                    <button onclick="net.create()" class="bg-emerald-600 px-8 py-4 rounded-2xl font-bold text-xl hover:bg-emerald-500 shadow-xl">🏠 방 만들기 (모둠1)</button>
+                    <div class="flex flex-col gap-2">
+                        <input type="text" id="join-id" placeholder="코드 4자리" class="px-4 py-4 rounded-xl text-slate-900 font-bold text-center text-xl outline-none">
+                        <button onclick="net.join()" class="bg-blue-600 px-8 py-3 rounded-xl font-bold hover:bg-blue-500">🔗 참여하기</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="status-ui" class="hidden mt-4 p-6 bg-slate-800 rounded-2xl max-w-2xl w-full border border-slate-700">
+                <h2 id="room-code-title" class="text-3xl font-black text-yellow-400 mb-4">방 생성 전</h2>
+                <p id="waiting-msg" class="text-lg font-bold mb-6 text-slate-300">위의 '방 만들기'를 누르거나 코드를 입력해 참여하세요.</p>
+                
+                <div id="wait-list" class="text-slate-500 font-black flex gap-6 text-lg justify-center mb-6">
+                    <span id="st-0" class="text-slate-600">● 모둠1(방장)</span>
+                    <span id="st-1" class="text-slate-600">● 모둠2(대기)</span>
+                    <span id="st-2" class="text-slate-600">● 모둠3(대기)</span>
+                    <span id="st-3" class="text-slate-600">● 모둠4(대기)</span>
+                </div>
+
+                <button onclick="start()" class="bg-gradient-to-r from-amber-500 to-orange-600 text-white font-black px-10 py-4 rounded-xl text-lg shadow-lg hover:scale-105 transition-all w-full">
+                    🚀 통신 건너뛰고 즉시 게임 시작 (시연용 치트키)
+                </button>
+            </div>
+        </div>
+
+        <header class="bg-slate-800 p-4 text-white flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <span id="my-label" class="bg-emerald-500 px-3 py-1 rounded-full text-[10px] font-black italic">CONNECTED</span>
+                <h2 class="text-xl font-black">🌱 가치 덕목 보난자</h2>
+            </div>
+            <div id="phase-msg" class="bg-white/10 px-6 py-1.5 rounded-full text-sm font-bold border border-white/20 text-yellow-300">대기 중</div>
+            <div class="flex items-center gap-4">
+                <span class="text-xs font-bold text-slate-400">덱 잔여: <b id="deck-left" class="text-white text-lg">100</b></span>
+                <button onclick="game.nextPhase()" id="btn-next" disabled class="bg-yellow-400 text-slate-900 px-5 py-2 rounded-xl font-black text-xs disabled:opacity-30">단계 완료 ❯</button>
+            </div>
+        </header>
+
+        <main class="flex-grow grid grid-cols-12 gap-4 p-4 overflow-hidden">
+            <div class="col-span-4 flex flex-col gap-4">
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 shadow-inner">
+                    <h3 class="text-[10px] font-black text-slate-400 mb-2 uppercase">🏅 모둠별 금화 현황</h3>
+                    <div id="score-board" class="space-y-1 text-xs font-bold"></div>
+                </div>
+                <div class="bg-indigo-50 p-4 rounded-2xl border border-indigo-200 flex-grow overflow-hidden flex flex-col">
+                    <h3 class="text-[10px] font-black text-indigo-900 mb-2 italic">🤝 중앙 시장 및 실시간 거래함</h3>
+                    <div id="market-zone" class="flex-grow flex flex-col gap-2 overflow-y-auto no-scrollbar"></div>
+                    <div class="mt-4 pt-4 border-t border-indigo-200">
+                        <select id="trade-target" class="w-full p-2 rounded-xl text-xs font-bold mb-2 outline-none border border-slate-300"></select>
+                        <button onclick="game.trade()" id="btn-trade" disabled class="w-full bg-indigo-600 text-white font-black py-2.5 rounded-xl text-xs disabled:opacity-30">🎁 현재 내 활성화 카드 전송</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-8 bg-green-50/40 rounded-[40px] border-2 border-dashed border-green-200 p-6 grid grid-cols-3 gap-6">
+                <div id="f-0" class="bg-white rounded-[30px] shadow-lg p-5 flex flex-col items-center justify-between border-b-4 border-slate-200">
+                    <span class="text-[10px] font-black text-slate-300 self-start uppercase italic">Field 1</span>
+                    <div class="field-ui py-4 flex flex-col items-center justify-center flex-grow"></div>
+                    <button onclick="game.harvest(0)" class="h-btn hidden w-full bg-amber-500 text-white font-black py-2 rounded-xl text-xs shadow-md">💰 수확하여 코인 획득</button>
+                </div>
+                <div id="f-1" class="bg-white rounded-[30px] shadow-lg p-5 flex flex-col items-center justify-between border-b-4 border-slate-200">
+                    <span class="text-[10px] font-black text-slate-300 self-start uppercase italic">Field 2</span>
+                    <div class="field-ui py-4 flex flex-col items-center justify-center flex-grow"></div>
+                    <button onclick="game.harvest(1)" class="h-btn hidden w-full bg-amber-500 text-white font-black py-2 rounded-xl text-xs shadow-md">💰 수확하여 코인 획득</button>
+                </div>
+                <div id="f-2" class="bg-white rounded-[30px] shadow-lg p-5 flex flex-col items-center justify-between border-b-4 border-slate-200">
+                    <span class="text-[10px] font-black text-slate-300 self-start uppercase italic">Field 3</span>
+                    <div class="field-ui py-4 flex flex-col items-center justify-center flex-grow"></div>
+                    <button onclick="game.harvest(2)" class="h-btn hidden w-full bg-amber-500 text-white font-black py-2 rounded-xl text-xs shadow-md">💰 수확하여 코인 획득</button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="h-40 bg-slate-900 p-4 flex flex-col border-t-4 border-slate-800">
+            <h3 class="text-white text-[10px] font-black mb-2 opacity-50 uppercase tracking-widest">우리 모둠 손패</h3>
+            <div id="hand-rail" class="flex gap-4 overflow-x-auto pb-2 px-2 items-center h-full no-scrollbar"></div>
+        </footer>
+    </div>
+
+    <script>
+        const VIRTUE_DATA = [
+            { id: 1, name: "생명 존중", color: "border-green-500", emoji: "🌱" },
+            { id: 2, name: "책임", color: "border-blue-500", emoji: "👔" },
+            { id: 3, name: "절제", color: "border-teal-500", emoji: "💧" },
+            { id: 4, name: "협력", color: "border-orange-500", emoji: "🤝" },
+            { id: 5, name: "공감", color: "border-red-500", emoji: "❤️" },
+            { id: 6, name: "성실", color: "border-sky-500", emoji: "⭐" },
+            { id: 7, name: "인내", color: "border-amber-700", emoji: "⏳" },
+            { id: 8, name: "배려", color: "border-yellow-500", emoji: "💛" },
+            { id: 9, name: "정의", color: "border-purple-500", emoji: "⚖️" },
+            { id: 10, name: "공동체", color: "border-emerald-700", emoji: "🏠" }
+        ];
+
+        let peer = null, conns = [], myIdx = 0;
+        let state = {
+            gameStarted: false, phase: 0, activeTurn: 0, deck: [],
+            hasPlantedMandatory: false, market: [],
+            players: [
+                { name: "모둠 1", hand: [], fields: [[], [], []], gold: 0, pending: [] },
+                { name: "모둠 2", hand: [], fields: [[], [], []], gold: 0, pending: [] },
+                { name: "모둠 3", hand: [], fields: [[], [], []], gold: 0, pending: [] },
+                { name: "모둠 4", hand: [], fields: [[], [], []], gold: 0, pending: [] }
+            ]
+        };
+
+        const net = {
+            create: () => {
+                const code = Math.floor(1000 + Math.random() * 9000).toString();
+                peer = new Peer('green-bonanza-' + code);
+                peer.on('open', () => {
+                    myIdx = 0;
+                    document.getElementById('setup-ui').classList.add('hidden');
+                    document.getElementById('status-ui').classList.remove('hidden');
+                    document.getElementById('room-code-title').innerText = `방 코드: ${code}`;
+                    document.getElementById('st-0').classList.add('text-emerald-400');
+                    document.getElementById('st-0').innerText = "● 모둠1(방장-입장)";
+                    initDeck();
+                });
+                peer.on('connection', conn => {
+                    conns.push(conn);
+                    setupMsg(conn);
+                    
+                    const connectedIdx = conns.length; 
+                    if(document.getElementById(`st-${connectedIdx}`)) {
+                        document.getElementById(`st-${connectedIdx}`).classList.add('text-emerald-400');
+                        document.getElementById(`st-${connectedIdx}`).innerText = `● 모둠${connectedIdx + 1}(입장)`;
+                    }
+                    
+                    const remaining = 3 - conns.length;
+                    if (remaining > 0) {
+                        document.getElementById('waiting-msg').innerText = `다른 ${remaining}대의 접속을 기다리는 중...`;
+                    } else {
+                        document.getElementById('waiting-msg').innerText = `모든 팀 연결 완료! 잠시 후 시작합니다.`;
+                        setTimeout(start, 1000);
+                    }
+                });
+            },
+            join: () => {
+                const code = document.getElementById('join-id').value;
+                if(!code) return alert("코드를 입력하세요");
+                peer = new Peer();
+                peer.on('open', () => {
+                    const conn = peer.connect('green-bonanza-' + code);
+                    conn.on('open', () => {
+                        conns.push(conn);
+                        setupMsg(conn);
+                        document.getElementById('net-layer').innerHTML = `<h1 class="text-4xl font-black text-white animate-pulse">본부에 연결되었습니다.<br>방장이 게임을 시작할 때까지 대기하세요...</h1>`;
+                    });
+                });
+            }
+        };
+
+        function setupMsg(conn) {
+            conn.on('data', data => {
+                if (data.type === 'SYNC') {
+                    state = data.state; 
+                    if(myIdx === -1 || myIdx === 0) myIdx = data.assignedIdx !== undefined ? data.assignedIdx : myIdx; 
+                    document.getElementById('net-layer').classList.add('hidden');
+                    updateUI();
+                }
+                if (data.type === 'START_SIGNAL') {
+                    document.getElementById('net-layer').classList.add('hidden');
+                    updateUI();
+                }
+                if (myIdx === 0 && data.type === 'REQ') { handleReq(data.from, data.action, data.payload); }
+            });
+        }
+
+        function initDeck() {
+            let cards = [];
+            VIRTUE_DATA.forEach(v => { for(let i=0; i<10; i++) cards.push({...v}); });
+            state.deck = cards.sort(() => Math.random() - 0.5);
+            state.players.forEach(p => { for(let i=0; i<5; i++) p.hand.push(state.deck.pop()); });
+        }
+
+        function start() {
+            if(state.deck.length === 0) { initDeck(); }
+            state.gameStarted = true;
+            document.getElementById('net-layer').classList.add('hidden');
+            
+            if(myIdx === 0 && conns.length > 0) {
+                conns.forEach(c => c.send({ type: 'START_SIGNAL' }));
+            }
+            broadcast();
+        }
+
+        const game = {
+            plant: (fIdx) => {
+                if (state.activeTurn !== myIdx || !state.gameStarted) return;
+                const cp = state.players[myIdx];
+                if (state.phase === 0) {
+                    if (cp.hand.length === 0) return;
+                    if (doPlant(cp.hand[0], fIdx, cp.hand)) state.hasPlantedMandatory = true;
+                } else if (state.phase === 2) {
+                    if (cp.pending.length === 0) return;
+                    doPlant(cp.pending[0], fIdx, cp.pending);
+                }
+                sync();
+            },
+            harvest: (fIdx) => {
+                const cp = state.players[myIdx];
+                const field = cp.fields[fIdx];
+                if (field.length === 0) return;
+                const counts = cp.fields.map(f => f.length);
+                if (counts.some(c => c > 1) && field.length === 1) return alert("종자 보호법 적용 중!");
+                
+                const coinsArr = [0, 0, 1, 0, 2, 3, 4];
+                let earned = coinsArr[field.length] || (field.length > 6 ? 4 : 0);
+                cp.gold += earned;
+                field.length = 0;
+                sync();
+            },
+            trade: () => {
+                if (state.activeTurn !== myIdx || state.phase !== 1) return;
+                const target = parseInt(document.getElementById('trade-target').value);
+                state.players[target].pending.push(state.players[myIdx].hand.shift());
+                sync();
+            },
+            nextPhase: () => {
+                if (state.activeTurn !== myIdx) return;
+                if (state.phase === 0) {
+                    if (!state.hasPlantedMandatory) return alert("첫 장은 필수입니다!");
+                    state.phase = 1;
+                    state.market = [state.deck.pop(), state.deck.pop()];
+                } else if (state.phase === 1) {
+                    state.players[myIdx].pending.push(...state.market);
+                    state.market = [];
+                    state.phase = 2;
+                } else if (state.phase === 2) {
+                    if (state.players[myIdx].pending.length > 0) return alert("심기 대기 중인 카드가 있습니다!");
+                    for(let i=0; i<2; i++) if(state.deck.length > 0) state.players[myIdx].hand.push(state.deck.pop());
+                    state.activeTurn = (state.activeTurn + 1) % 4;
+                    state.phase = 0; state.hasPlantedMandatory = false;
+                }
+                sync();
+            }
+        };
+
+        function doPlant(card, fIdx, fromArr) {
+            const field = state.players[myIdx].fields[fIdx];
+            if (field.length === 0 || field[0].id === card.id) {
+                field.push(fromArr.shift()); return true;
+            }
+            alert("다른 종류입니다!"); return false;
+        }
+
+        function sync() { 
+            if (myIdx === 0) broadcast(); 
+            else conns[0].send({ type: 'REQ', from: myIdx, action: 'UPDATE', payload: state }); 
+        }
+        function broadcast() { conns.forEach((c, i) => c.send({ type: 'SYNC', state, assignedIdx: i+1 })); updateUI(); }
+        function handleReq(f, a, payload) { 
+            if(a === 'UPDATE') { 
+                state = payload; 
+                broadcast(); 
+            } 
+        }
+
+        function updateUI() {
+            if (myIdx === -1) return;
+            const cp = state.players[myIdx];
+            const isMyTurn = state.activeTurn === myIdx;
+            document.getElementById('my-label').innerText = `모둠 ${myIdx + 1} 접속 중`;
+            document.getElementById('deck-left').innerText = state.deck.length;
+            document.getElementById('btn-next').disabled = !isMyTurn;
+            document.getElementById('btn-trade').disabled = !isMyTurn || state.phase !== 1;
+            
+            const pNames = ["1단계: 손패 심기 (첫 장 필수)", "2단계: 장터 거래 (원하는 모둠과 교환)", "3단계: 강제 심기 (거래된 콩 매립)"];
+            document.getElementById('phase-msg').innerText = isMyTurn ? `🔥 ${pNames[state.phase]}` : `💤 ${state.players[state.activeTurn].name} 턴`;
+
+            for(let i=0; i<3; i++) {
+                const f = cp.fields[i], div = document.querySelector(`#f-${i} .field-ui`), btn = document.querySelector(`#f-${i} .h-btn`);
+                if (f && f.length > 0) {
+                    div.innerHTML = `<span class="text-6xl mb-1">${f[0].emoji}</span><b class="text-base">${f[0].name}</b><p class="text-[10px] text-slate-400 font-bold">${f.length}장</p>`;
+                    btn.classList.remove('hidden');
+                } else {
+                    div.innerHTML = `<button onclick="game.plant(${i})" class="w-16 h-16 border-2 border-dashed border-slate-300 rounded-full text-slate-300 text-2xl font-bold">+</button>`;
+                    btn.classList.add('hidden');
+                }
+            }
+
+            const market = document.getElementById('market-zone'); market.innerHTML = "";
+            if(state.market) {
+                state.market.forEach(c => market.innerHTML += `<div class="bg-white p-2.5 rounded-xl border-2 border-emerald-400 text-xs font-bold">🛒 시장: ${c.emoji} ${c.name}</div>`);
+            }
+            if(cp.pending) {
+                cp.pending.forEach(c => market.innerHTML += `<div class="bg-yellow-400 p-2.5 rounded-xl border-2 border-white text-xs font-black animate-bounce text-yellow-900">⚠️ 강제심기: ${c.emoji} ${c.name}</div>`);
+            }
+
+            const rail = document.getElementById('hand-rail'); rail.innerHTML = "";
+            if(cp.hand) {
+                cp.hand.forEach((c, idx) => {
+                    const act = idx === 0 && isMyTurn && state.phase === 0;
+                    rail.innerHTML += `<div class="flex-shrink-0 w-22 h-28 bg-white rounded-xl border-2 p-2 flex flex-col items-center justify-between shadow-md ${act ? 'active-hand' : 'opacity-30'}" style="border-color:${c.color ? c.color.split('-')[1] : 'slate'}500">
+                        <span class="text-[9px] font-black opacity-40">${idx===0?'ACTIVE':'WAIT'}</span>
+                        <span class="text-2xl">${c.emoji}</span>
+                        <p class="text-[10px] font-extrabold text-center tracking-tighter">${c.name}</p>
+                    </div>`;
+                });
+            }
+
+            const sb = document.getElementById('score-board'), st = document.getElementById('trade-target');
+            sb.innerHTML = ""; if(st && st.children.length === 0) {
+                st.innerHTML = ""; state.players.forEach((p, i) => { if(i !== myIdx) st.innerHTML += `<option value="${i}">👥 ${p.name}</option>`; });
+            }
+            state.players.forEach((p, i) => sb.innerHTML += `<div class="flex justify-between p-2 rounded-xl text-xs ${i === state.activeTurn && state.gameStarted ? 'bg-emerald-600 text-white shadow-md' : 'bg-white border border-slate-200'}"><span>${p.name} (${p.hand.length}장) ${i === myIdx ? '⭐' : ''}</span><span class="font-black text-amber-500">🪙 ${p.gold} Gold</span></div>`);
+        }
+    </script>
+</body>
+</html>
