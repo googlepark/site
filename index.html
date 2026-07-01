@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>자연愛Green - 정통 덕목 보난자 (마스터판)</title>
+    <title>자연愛Green - 정통 덕목 보난자 (마스터판 - 찐통신)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <style>
@@ -183,6 +183,7 @@
                     document.getElementById('net-layer').classList.add('hidden');
                     updateUI();
                 }
+                // 🚨 수정 포인트 1: 클라이언트가 보낸 실제 payload(상태)를 받아 처리하도록 수정
                 if (myIdx === 0 && data.type === 'REQ') { handleReq(data.from, data.action, data.payload); }
             });
         }
@@ -199,7 +200,6 @@
             state.gameStarted = true;
             document.getElementById('net-layer').classList.add('hidden');
             
-            // 방장인 경우 팀원들에게도 시작 신호 강제 사출
             if(myIdx === 0 && conns.length > 0) {
                 conns.forEach(c => c.send({ type: 'START_SIGNAL' }));
             }
@@ -266,9 +266,20 @@
             alert("다른 종류입니다!"); return false;
         }
 
-        function sync() { if (myIdx === 0) broadcast(); else conns[0].send({ type: 'REQ', from: myIdx, action: 'UPDATE' }); }
+        // 🚨 수정 포인트 2: 클라이언트가 방장에게 신호를 보낼 때 '자기가 수정한 state'를 통째로 보냄 (찐통신 핵심)
+        function sync() { 
+            if (myIdx === 0) broadcast(); 
+            else conns[0].send({ type: 'REQ', from: myIdx, action: 'UPDATE', payload: state }); 
+        }
         function broadcast() { conns.forEach((c, i) => c.send({ type: 'SYNC', state, assignedIdx: i+1 })); updateUI(); }
-        function handleReq(f, a) { if(a === 'UPDATE') broadcast(); }
+        
+        // 🚨 수정 포인트 3: 방장이 클라이언트의 state를 접수해서 전체 화면에 동기화함
+        function handleReq(f, a, payload) { 
+            if(a === 'UPDATE') { 
+                state = payload; // 가짜 통신이 찐 통신으로 바뀌는 마법의 1줄
+                broadcast(); 
+            } 
+        }
 
         function updateUI() {
             if (myIdx === -1) return;
