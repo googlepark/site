@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>자연愛Green - 정통 덕목 보난자 (최종 패치)</title>
+    <title>자연愛Green - 정통 덕목 보난자</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <style>
         .hand-card { transition: all 0.2s; }
-        .active-hand { ring: 4px solid #fbbf24; transform: translateY(-10px); }
+        .active-hand { ring: 4px solid #fbbf24; transform: translateY(-10px); z-index: 50; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
@@ -19,7 +19,7 @@
         <div id="net-layer" class="absolute inset-0 z-[100] bg-slate-900 flex flex-col items-center justify-center text-white p-10 text-center">
             <div id="setup-ui">
                 <h1 class="text-5xl font-black mb-4 text-emerald-400">VIRTUE BONANZA</h1>
-                <p class="mb-10 text-slate-400 text-lg">4대 태블릿 실시간 연동 - 정식 보난자 룰</p>
+                <p class="mb-10 text-slate-400 text-lg">4대 태블릿 실시간 연동 - 정식 보난자 룰 시스템</p>
                 <div class="flex gap-4 mb-8 justify-center">
                     <button onclick="net.create()" class="bg-emerald-600 px-8 py-4 rounded-2xl font-bold text-xl hover:bg-emerald-500 shadow-xl">🏠 방 만들기 (모둠1)</button>
                     <div class="flex flex-col gap-2">
@@ -50,55 +50,58 @@
                 <span id="my-label" class="bg-emerald-500 px-3 py-1 rounded-full text-[10px] font-black italic">CONNECTED</span>
                 <h2 class="text-xl font-black">🌱 가치 덕목 보난자</h2>
             </div>
-            <div id="phase-msg" class="bg-white/10 px-6 py-1.5 rounded-full text-sm font-bold border border-white/20">대기 중</div>
+            <div id="phase-msg" class="bg-white/10 px-6 py-1.5 rounded-full text-sm font-bold border border-white/20 text-yellow-300">대기 중</div>
             <div class="flex items-center gap-4">
-                <span class="text-xs font-bold text-slate-400">덱: <b id="deck-left" class="text-white text-lg">100</b></span>
-                <button onclick="game.nextPhase()" id="btn-next" disabled class="bg-yellow-400 text-slate-900 px-5 py-2 rounded-xl font-black text-xs disabled:opacity-30">다음 ❯</button>
+                <span class="text-xs font-bold text-slate-400">덱 잔여: <b id="deck-left" class="text-white text-lg">100</b></span>
+                <button onclick="game.nextPhase()" id="btn-next" disabled class="bg-yellow-400 text-slate-900 px-5 py-2 rounded-xl font-black text-xs disabled:opacity-30">단계 완료 ❯</button>
             </div>
         </header>
 
         <main class="flex-grow grid grid-cols-12 gap-4 p-4 overflow-hidden">
-            <div class="col-span-3 flex flex-col gap-4">
+            <div class="col-span-4 flex flex-col gap-4">
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 shadow-inner">
-                    <h3 class="text-[10px] font-black text-slate-400 mb-2">🏅 스코어</h3>
+                    <h3 class="text-[10px] font-black text-slate-400 mb-2 uppercase">🏅 모둠별 금화 현황</h3>
                     <div id="score-board" class="space-y-1 text-xs font-bold"></div>
                 </div>
+                
                 <div class="bg-indigo-50 p-4 rounded-2xl border border-indigo-200 flex-grow overflow-hidden flex flex-col">
-                    <h3 class="text-[10px] font-black text-indigo-900 mb-2 italic">🤝 거래 센터</h3>
+                    <h3 class="text-[10px] font-black text-indigo-900 mb-2 italic">🤝 중앙 시장 및 실시간 거래함</h3>
                     <div id="market-zone" class="flex-grow flex flex-col gap-2 overflow-y-auto no-scrollbar"></div>
+                    
                     <div class="mt-4 pt-4 border-t border-indigo-200">
-                        <select id="trade-target" class="w-full p-2 rounded-xl text-xs font-bold mb-2"></select>
-                        <button onclick="game.trade()" id="btn-trade" disabled class="w-full bg-indigo-600 text-white font-black py-2 rounded-xl text-xs disabled:opacity-30">맨 앞 카드 전송</button>
+                        <select id="trade-target" class="w-full p-2 rounded-xl text-xs font-bold mb-2 outline-none border border-slate-300"></select>
+                        <button onclick="game.trade()" id="btn-trade" disabled class="w-full bg-indigo-600 text-white font-black py-2.5 rounded-xl text-xs disabled:opacity-30">🎁 현재 내 활성화 카드 전송</button>
                     </div>
                 </div>
             </div>
 
-            <div class="col-span-9 bg-green-50/50 rounded-[40px] border-2 border-dashed border-green-200 p-6 grid grid-cols-3 gap-6">
+            <div class="col-span-8 bg-green-50/40 rounded-[40px] border-2 border-dashed border-green-200 p-6 grid grid-cols-3 gap-6">
                 <div id="f-0" class="bg-white rounded-[30px] shadow-lg p-5 flex flex-col items-center justify-between border-b-4 border-slate-200">
-                    <span class="text-[10px] font-black text-slate-300 self-start uppercase">Field 1</span>
-                    <div class="field-ui py-4 flex flex-col items-center"></div>
-                    <button onclick="game.harvest(0)" class="h-btn hidden w-full bg-amber-500 text-white font-black py-2 rounded-xl text-xs">수확하기</button>
+                    <span class="text-[10px] font-black text-slate-300 self-start uppercase italic">Field 1</span>
+                    <div class="field-ui py-4 flex flex-col items-center justify-center flex-grow"></div>
+                    <button onclick="game.harvest(0)" class="h-btn hidden w-full bg-amber-500 text-white font-black py-2 rounded-xl text-xs shadow-md">💰 수확하여 코인 획득</button>
                 </div>
                 <div id="f-1" class="bg-white rounded-[30px] shadow-lg p-5 flex flex-col items-center justify-between border-b-4 border-slate-200">
-                    <span class="text-[10px] font-black text-slate-300 self-start uppercase">Field 2</span>
-                    <div class="field-ui py-4 flex flex-col items-center"></div>
-                    <button onclick="game.harvest(1)" class="h-btn hidden w-full bg-amber-500 text-white font-black py-2 rounded-xl text-xs">수확하기</button>
+                    <span class="text-[10px] font-black text-slate-300 self-start uppercase italic">Field 2</span>
+                    <div class="field-ui py-4 flex flex-col items-center justify-center flex-grow"></div>
+                    <button onclick="game.harvest(1)" class="h-btn hidden w-full bg-amber-500 text-white font-black py-2 rounded-xl text-xs shadow-md">💰 수확하여 코인 획득</button>
                 </div>
                 <div id="f-2" class="bg-white rounded-[30px] shadow-lg p-5 flex flex-col items-center justify-between border-b-4 border-slate-200">
-                    <span class="text-[10px] font-black text-slate-300 self-start uppercase">Field 3</span>
-                    <div class="field-ui py-4 flex flex-col items-center"></div>
-                    <button onclick="game.harvest(2)" class="h-btn hidden w-full bg-amber-500 text-white font-black py-2 rounded-xl text-xs">수확하기</button>
+                    <span class="text-[10px] font-black text-slate-300 self-start uppercase italic">Field 3</span>
+                    <div class="field-ui py-4 flex flex-col items-center justify-center flex-grow"></div>
+                    <button onclick="game.harvest(2)" class="h-btn hidden w-full bg-amber-500 text-white font-black py-2 rounded-xl text-xs shadow-md">💰 수확하여 코인 획득</button>
                 </div>
             </div>
         </main>
 
-        <footer class="h-40 bg-slate-900 p-4 flex flex-col">
-            <h3 class="text-white text-[10px] font-black mb-2 opacity-50 uppercase tracking-widest">My Hand</h3>
+        <footer class="h-40 bg-slate-900 p-4 flex flex-col border-t-4 border-slate-800">
+            <h3 class="text-white text-[10px] font-black mb-2 opacity-50 uppercase tracking-widest">우리 모둠 손패 (순서 변경 불가 ⚠️ 가장 왼쪽 노란색 카드만 사용 가능)</h3>
             <div id="hand-rail" class="flex gap-4 overflow-x-auto pb-2 px-2 items-center h-full no-scrollbar"></div>
         </footer>
     </div>
 
     <script>
+        // 규칙 9: 10종 덕목 카드 템플릿 세팅 (각 10장씩 총 100장)
         const VIRTUE_DATA = [
             { id: 1, name: "생명 존중", color: "border-green-500", emoji: "🌱" },
             { id: 2, name: "책임", color: "border-blue-500", emoji: "👔" },
@@ -112,10 +115,11 @@
             { id: 10, name: "공동체", color: "border-emerald-700", emoji: "🏠" }
         ];
 
-        let peer = null, conns = [], myIdx = 0; // 로컬 테스트 원활성을 위해 기본 인덱스 0 세팅
+        let peer = null, conns = [], myIdx = 0; // 로컬 단독 구동 대비 디폴트 모둠1(0) 고정
         let state = {
             gameStarted: false, phase: 0, activeTurn: 0, deck: [],
-            hasPlantedMandatory: false, market: [],
+            hasPlantedMandatory: false, // 규칙 1: 턴 시작 시 손패 첫 장 강제 심기 플래그
+            market: [], // 규칙 2: 바닥에 오픈된 2장의 카드
             players: [
                 { name: "모둠 1", hand: [], fields: [[], [], []], gold: 0, pending: [] },
                 { name: "모둠 2", hand: [], fields: [[], [], []], gold: 0, pending: [] },
@@ -189,7 +193,6 @@
         }
 
         function start() {
-            // 🚩 만약 혼자 테스트하거나 매칭이 지연되면 강제로 덱 생성해서 기동
             if(state.deck.length === 0) { initDeck(); }
             state.gameStarted = true;
             document.getElementById('net-layer').classList.add('hidden');
@@ -198,12 +201,16 @@
 
         const game = {
             plant: (fIdx) => {
-                if (state.activeTurn !== myIdx) return;
+                if (state.activeTurn !== myIdx || !state.gameStarted) return;
                 const cp = state.players[myIdx];
+                
+                // 규칙 1: 1단계에서는 무조건 손패 제일 앞장만 심을 수 있음
                 if (state.phase === 0) {
                     if (cp.hand.length === 0) return;
                     if (doPlant(cp.hand[0], fIdx, cp.hand)) state.hasPlantedMandatory = true;
-                } else if (state.phase === 2) {
+                } 
+                // 규칙 5-6: 3단계 거래/장터 카드는 임시 보관함(pending)에서 강제 심기
+                else if (state.phase === 2) {
                     if (cp.pending.length === 0) return;
                     doPlant(cp.pending[0], fIdx, cp.pending);
                 }
@@ -213,36 +220,69 @@
                 const cp = state.players[myIdx];
                 const field = cp.fields[fIdx];
                 if (field.length === 0) return;
+
+                // 규칙 7: 종자 보호법 (2개 이상 심긴 밭이 있다면 1개짜리 밭은 수확 불가)
                 const counts = cp.fields.map(f => f.length);
-                if (counts.some(c => c > 1) && field.length === 1) return alert("종자 보호법 적용 중!");
+                const hasMulti = counts.some(c => c > 1);
+                if (hasMulti && field.length === 1) return alert("⚠️ 종자 보호법 보호 안내:\n2장 이상 심겨진 다른 밭이 있으므로 1장짜리 밭은 수확할 수 없습니다!");
                 
+                // 규칙 9: 2, 4, 5, 6 가중치 연산식 -> 코인 1, 2, 3, 4개 획득
                 const coinsArr = [0, 0, 1, 0, 2, 3, 4];
                 let earned = coinsArr[field.length] || (field.length > 6 ? 4 : 0);
+                
                 cp.gold += earned;
-                field.length = 0;
+                field.length = 0; // 수확 후 밭 리셋 (남은 카드는 카드 더미 맨 아래 개념으로 소멸화)
                 sync();
             },
             trade: () => {
+                // 규칙 3-4: 2단계 거래 페이즈 활성화
                 if (state.activeTurn !== myIdx || state.phase !== 1) return;
                 const target = parseInt(document.getElementById('trade-target').value);
+                
+                // 규칙 5: 거래를 통해 확보한 콩(덕목) 카드는 상대방의 강제 매립 주머니(pending)로 직행
                 state.players[target].pending.push(state.players[myIdx].hand.shift());
                 sync();
             },
             nextPhase: () => {
                 if (state.activeTurn !== myIdx) return;
+                
+                // 1단계 -> 2단계 전환 점검
                 if (state.phase === 0) {
-                    if (!state.hasPlantedMandatory) return alert("첫 장은 필수입니다!");
+                    if (!state.hasPlantedMandatory) return alert("⚠️ 보난자 규칙 거부:\n첫 번째 활성화 콩 카드는 최소 1장 무조건 밭에 심어야 합니다!");
                     state.phase = 1;
-                    state.market = [state.deck.pop(), state.deck.pop()];
-                } else if (state.phase === 1) {
+                    // 규칙 2: 내 턴 거래 시작 시 덱에서 2장을 오픈하여 시장에 배치
+                    if(state.deck.length >= 2) {
+                        state.market = [state.deck.pop(), state.deck.pop()];
+                    }
+                } 
+                // 2단계 -> 3단계 전환 점검
+                else if (state.phase === 1) {
+                    // 시장에 남은 카드들은 모두 본인의 강제 매립 주머니로 흡수
                     state.players[myIdx].pending.push(...state.market);
                     state.market = [];
                     state.phase = 2;
-                } else if (state.phase === 2) {
-                    if (state.players[myIdx].pending.length > 0) return alert("심기 대기 중인 카드가 있습니다!");
-                    for(let i=0; i<2; i++) if(state.deck.length > 0) state.players[myIdx].hand.push(state.deck.pop());
-                    state.activeTurn = (state.activeTurn + 1) % 4;
-                    state.phase = 0; state.hasPlantedMandatory = false;
+                } 
+                // 3단계 -> 다음 턴 전환 점검
+                else if (state.phase === 2) {
+                    // 규칙 6: 거래/장터 카드를 전부 심어야만 비로소 턴을 종료할 수 있음
+                    if (state.players[myIdx].pending.length > 0) return alert("⚠️ 강제 매립 미완료:\n거래함이나 시장에서 가져온 카드는 무조건 밭에 전부 심어야 턴이 끝납니다!");
+                    
+                    // 규칙 2: 턴이 완벽히 끝날 때 새로운 카드 2장을 강제로 드로우하여 손패 맨 뒤에 결합
+                    for(let i=0; i<2; i++) {
+                        if(state.deck.length > 0) {
+                            state.players[myIdx].hand.push(state.deck.pop());
+                        } else {
+                            // 규칙 9: 더미의 카드가 더이상 없다면 게임 즉시 종료 판정
+                            alert("🌱 카드 더미가 모두 소진되었습니다! 게임이 종료됩니다.");
+                            state.gameStarted = false;
+                            sync();
+                            return;
+                        }
+                    }
+                    
+                    state.activeTurn = (state.activeTurn + 1) % 4; // 다음 모둠 교대
+                    state.phase = 0; 
+                    state.hasPlantedMandatory = false;
                 }
                 sync();
             }
@@ -250,10 +290,13 @@
 
         function doPlant(card, fIdx, fromArr) {
             const field = state.players[myIdx].fields[fIdx];
+            // 규칙 4: 밭에는 같은 종류의 카드만 이어서 심을 수 있음
             if (field.length === 0 || field[0].id === card.id) {
-                field.push(fromArr.shift()); return true;
+                field.push(fromArr.shift()); 
+                return true;
             }
-            alert("다른 종류입니다!"); return false;
+            alert("⚠️ 밭 재배 규칙 에러:\n해당 밭에는 이미 다른 가치가 심겨 있습니다. 공간이 없다면 기존 밭을 수확(청산)하세요!"); 
+            return false;
         }
 
         function sync() { if (myIdx === 0) broadcast(); else conns[0].send({ type: 'REQ', from: myIdx, action: 'UPDATE' }); }
@@ -269,42 +312,49 @@
             document.getElementById('btn-next').disabled = !isMyTurn;
             document.getElementById('btn-trade').disabled = !isMyTurn || state.phase !== 1;
             
-            const pNames = ["손패 심기", "장터 거래", "강제 심기"];
-            document.getElementById('phase-msg').innerText = isMyTurn ? `🔥 ${pNames[state.phase]}` : `💤 ${state.players[state.activeTurn].name} 턴`;
+            const pNames = ["1단계: 내 손패 심기 (첫 장 의무)", "2단계: 장터 오픈 및 타 모둠 거래", "3단계: 거래 카드 밭에 강제 매립"];
+            document.getElementById('phase-msg').innerText = isMyTurn ? `🔥 진행 중: ${pNames[state.phase]}` : `💤 대기 상태: ${state.players[state.activeTurn].name} 행동 중`;
 
+            // 3개의 밭 대확장 출력 동기화
             for(let i=0; i<3; i++) {
                 const f = cp.fields[i], div = document.querySelector(`#f-${i} .field-ui`), btn = document.querySelector(`#f-${i} .h-btn`);
                 if (f && f.length > 0) {
-                    div.innerHTML = `<span class="text-6xl mb-1">${f[0].emoji}</span><b class="text-base">${f[0].name}</b><p class="text-[10px] text-slate-400">${f.length}장</p>`;
+                    div.innerHTML = `<span class="text-6xl mb-1">${f[0].emoji}</span><b class="text-base">${f[0].name}</b><p class="text-[10px] text-slate-400 font-bold">${f.length}장 적재</p>`;
                     btn.classList.remove('hidden');
                 } else {
-                    div.innerHTML = `<button onclick="game.plant(${i})" class="w-16 h-16 border-2 border-dashed border-slate-200 rounded-full text-slate-300 text-2xl">+</button>`;
+                    div.innerHTML = `<button onclick="game.plant(${i})" class="w-16 h-16 border-2 border-dashed border-slate-300 rounded-full text-slate-300 text-2xl hover:bg-slate-50 font-bold">+</button>`;
                     btn.classList.add('hidden');
                 }
             }
 
+            // 거래 및 장터함 실시간 출력
             const market = document.getElementById('market-zone'); market.innerHTML = "";
             if(state.market) {
-                state.market.forEach(c => market.innerHTML += `<div class="bg-white p-2 rounded-lg border-2 border-emerald-400 text-[10px] font-bold">🛒 ${c.name}</div>`);
+                state.market.forEach(c => market.innerHTML += `<div class="bg-white p-2.5 rounded-xl border-2 border-emerald-400 text-xs font-bold flex items-center gap-2">🛒 시장 오픈: ${c.emoji} ${c.name}</div>`);
             }
             if(cp.pending) {
-                cp.pending.forEach(c => market.innerHTML += `<div class="bg-yellow-400 p-2 rounded-lg border-2 border-white text-[10px] font-black animate-bounce">⚠️ ${c.name} (심기!)</div>`);
+                cp.pending.forEach(c => market.innerHTML += `<div class="bg-yellow-400 p-2.5 rounded-xl border-2 border-white text-xs font-black flex items-center gap-2 animate-bounce text-yellow-900">⚠️ 강제 매립 대기: ${c.emoji} ${c.name}</div>`);
             }
 
+            // 손패 레일 시스템 정밀 락 처리
             const rail = document.getElementById('hand-rail'); rail.innerHTML = "";
             if(cp.hand) {
                 cp.hand.forEach((c, idx) => {
                     const act = idx === 0 && isMyTurn && state.phase === 0;
-                    rail.innerHTML += `<div class="flex-shrink-0 w-20 h-28 bg-white rounded-xl border-2 p-2 flex flex-col items-center justify-between shadow-md ${act ? 'active-hand' : 'opacity-30'}" style="border-color:${c.color ? c.color.split('-')[1] : 'emerald'}500">
-                        <span class="text-2xl">${c.emoji}</span><p class="text-[9px] font-extrabold text-center">${c.name}</p></div>`;
+                    rail.innerHTML += `<div class="flex-shrink-0 w-22 h-28 bg-white rounded-xl border-2 p-2 flex flex-col items-center justify-between shadow-md ${act ? 'active-hand' : 'opacity-30'}" style="border-color:${c.color ? c.color.split('-')[1] : 'slate'}500">
+                        <span class="text-[9px] font-black opacity-40">${idx===0?'ACTIVE':'WAIT'}</span>
+                        <span class="text-2xl">${c.emoji}</span>
+                        <p class="text-[10px] font-extrabold text-center tracking-tighter">${c.name}</p>
+                    </div>`;
                 });
             }
 
+            // 스코어보드 및 셀렉트 박스 동적 렌더링
             const sb = document.getElementById('score-board'), st = document.getElementById('trade-target');
             sb.innerHTML = ""; if(st && st.children.length === 0) {
-                st.innerHTML = ""; state.players.forEach((p, i) => { if(i !== myIdx) st.innerHTML += `<option value="${i}">${p.name}</option>`; });
+                st.innerHTML = ""; state.players.forEach((p, i) => { if(i !== myIdx) st.innerHTML += `<option value="${i}">👥 ${p.name}에게 전송</option>`; });
             }
-            state.players.forEach((p, i) => sb.innerHTML += `<div class="flex justify-between p-1.5 rounded-lg ${i === state.activeTurn ? 'bg-emerald-600 text-white' : 'bg-white shadow-sm'}"><span>${p.name}</span><span>🪙 ${p.gold}</span></div>`);
+            state.players.forEach((p, i) => sb.innerHTML += `<div class="flex justify-between p-2 rounded-xl text-xs ${i === state.activeTurn && state.gameStarted ? 'bg-emerald-600 text-white shadow-md scale-102' : 'bg-white border border-slate-200'}"><span>${p.name} (${p.hand.length}장) ${i === myIdx ? '⭐' : ''}</span><span class="font-black text-amber-500">🪙 ${p.gold} 코인</span></div>`);
         }
     </script>
 </body>
